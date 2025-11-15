@@ -9,9 +9,9 @@
 # https://github.com/docker/awesome-compose
 services:
   swim-pro:
-    build:
-      context: .
+    build: .
     container_name: swimpro-docker
+    command: gunicorn 'app.wsgi' --bind=0.0.0.0:8000 --reload
     ports:
       - 8000:8000
     depends_on:
@@ -22,15 +22,18 @@ services:
       DEBUG: ${DEBUG}
       DJANGO_LOGLEVEL: ${DJANGO_LOGLEVEL}
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
+
       DATABASE_ENGINE: ${DATABASE_ENGINE}
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USERNAME: ${DATABASE_USERNAME}
-
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       DATABASE_HOST: ${DATABASE_HOST}
       DATABASE_PORT: ${DATABASE_PORT}
     env_file:
       - .env
+    volumes:
+      - .:/app
+
   db:
     image: postgres
     restart: always

@@ -12,7 +12,7 @@ services:
     build: .
     restart: always
     container_name: swimpro-docker
-    command: gunicorn 'app.wsgi' --bind=0.0.0.0:8000 --reload
+    command: /app/dev.setup.bat
     ports:
       - 8000:8000
     depends_on:

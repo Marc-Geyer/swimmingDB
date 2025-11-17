@@ -19,7 +19,11 @@ services:
     container_name: swimpro-docker
     build: .
     restart: always
-    command: /app/dev.setup.bat
+    command: >
+      sh -c "
+        python manage.py migrate &&
+        gunicorn app.wsgi:application --bind 0.0.0.0:8000 --reload
+      "
     networks:
       - swim_pro_network
     ports:

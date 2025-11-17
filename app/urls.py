@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.i18n import JavaScriptCatalog
 
 import swimpro
 
@@ -23,3 +24,16 @@ urlpatterns = [
     path('', include(swimpro.urls)),
     path('admin/', admin.site.urls),
 ]
+
+# Setup needed reccurence field
+
+# If you already have a js_info_dict dictionary, just add
+# 'recurrence' to the existing 'packages' tuple.
+js_info_dict = {
+    'packages': ('recurrence', ),
+}
+# jsi18n can be anything you like here
+# TODO Figure out making it work
+# urlpatterns += [
+#     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), js_info_dict),
+# ]

@@ -7,12 +7,21 @@
 # You can add other services your application may depend on here, such as a
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
+networks:
+  swim_pro_network:
+    driver: bridge
+
+volumes:
+ db-data:
+
 services:
   swim-pro:
+    container_name: swimpro-docker
     build: .
     restart: always
-    container_name: swimpro-docker
     command: /app/dev.setup.bat
+    networks:
+      - swim_pro_network
     ports:
       - 8000:8000
     depends_on:
@@ -36,10 +45,13 @@ services:
       - .:/app
 
   db:
+    container_name: swimpto_db
     image: postgres
     restart: always
     volumes:
       - db-data:/var/lib/postgresql
+    networks:
+      - swim_pro_network
     environment:
       POSTGRES_DB: ${DATABASE_NAME}
       POSTGRES_USER: ${DATABASE_USERNAME}
@@ -53,6 +65,5 @@ services:
       retries: 5
     env_file:
       - .env
-volumes:
- db-data:
+
 

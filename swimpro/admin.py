@@ -5,5 +5,6 @@ from swimpro.models import *
 # Register your models here.
 
 admin.site.register(Person)
-admin.site.register(Group)
+admin.site.register(Accreditation)
+admin.site.register(TrainingGroup)
 admin.site.register(TrainingTime)

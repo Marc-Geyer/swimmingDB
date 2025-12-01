@@ -27,9 +27,18 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","127.0.0.1").split(",")
 
+# Setup and enable localisation
+LANGUAGES = [
+    ("en", "English"),
+    ("de", "German"),
+]
+LOCALE_PATHS = [
+    BASE_DIR / 'app/locale',
+    BASE_DIR / 'swimpro/locale',
+]
+USE_I18N = True
 
 # Application definition
-
 INSTALLED_APPS = [
     'swimpro.apps.SwimproConfig',
     'django.contrib.admin',
@@ -47,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    "django.middleware.locale.LocaleMiddleware",
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',

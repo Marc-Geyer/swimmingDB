@@ -3,12 +3,12 @@
 # https://docs.docker.com/go/compose-spec-reference/
 
 # Here the instructions define your application as a service called "server".
-# This service is built from the Dockerfile in the current directory.
+# This service is built from the Dockerfile.prod in the current directory.
 # You can add other services your application may depend on here, such as a
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 networks:
-  swim_pro_network:
+  swim_pro_dev_network:
     driver: bridge
 
 volumes:
@@ -17,17 +17,21 @@ volumes:
 services:
   swim-pro:
     container_name: swimpro-docker
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     restart: always
     command: >
       sh -c "
+        django-admin makemessages -a --ignore manage.py --ignore node_modules --ignore venv --ignore static &&
+        django-admin compilemessages &&
         python manage.py migrate &&
         python manage.py runserver 0.0.0.0:8000
       "
     networks:
-      - swim_pro_network
+      - swim_pro_dev_network
     ports:
-      - 8000:8000
+      - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -57,7 +61,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql
     networks:
-      - swim_pro_network
+      - swim_pro_dev_network
     environment:
       POSTGRES_DB: ${DATABASE_NAME}
       POSTGRES_USER: ${DATABASE_USERNAME}

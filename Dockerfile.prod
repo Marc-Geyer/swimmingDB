@@ -16,6 +16,10 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # the application crashes without emitting any logs due to buffering.
 ENV PYTHONUNBUFFERED=1
 
+# Copy project files
+COPY . /app/
+
+# Set correct working directory
 WORKDIR /app
 
 # Create a non-privileged user that the app will run under.
@@ -30,6 +34,12 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 
+# Install gettext for translations
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gettext \
+ && rm -rf /var/lib/apt/lists/*
+
+
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
 # Leverage a bind mount to requirements.txt to avoid having to copy them into
@@ -37,6 +47,9 @@ RUN adduser \
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python -m pip install -r requirements.txt
+
+# Compile translations for production
+RUN python manage.py compilemessages --settings=app.settings
 
 # Switch to the non-privileged user to run the application.
 USER appuser

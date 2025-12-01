@@ -1,8 +1,13 @@
 {% extends "base.html" %}
+{% load i18n %}
+
 {% block title %}Post Monster{% endblock %}
 
 {% block content %}
-  <h1>Hallo</h1>
-  Schön das du die seite gefunden hast!
+    <h1>Hallo</h1>
+    {% blocktranslate %}
+    Nice that you found the page
+    {% endblocktranslate %}
+
   <!-- your specific page content here -->
 {% endblock %}

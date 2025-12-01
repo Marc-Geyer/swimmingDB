@@ -9,13 +9,20 @@
 # https://github.com/docker/awesome-compose
 version: "3.9"
 
+networks:
+  swimpro_net:
+    driver: bridge
+
+volumes:
+  db-data:
+
 services:
   swim-pro:
     build:
       context: .
       dockerfile: Dockerfile.prod
-    container_name: swimpro-prod
-    env_file: .env
+    container_name: swimpro
+    env_file: .env.prod
     restart: always
     ports:
       - "9000:8000"
@@ -23,7 +30,7 @@ services:
       db:
         condition: service_healthy
     networks:
-      - swim_net
+      - swimpro_net
 
   nginx:
     image: nginx:alpine
@@ -32,35 +39,29 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.config:/etc/nginx/nginx.config:ro
       - ./staticfiles:/app/staticfiles:ro
     depends_on:
       - swim-pro
     networks:
-      - swim_net
+      - swimpro_net
 
   db:
-    image: postgres
-    container_name: swimpro_db
+    image: postgres:16
+    container_name: swimpro-db
     restart: always
     volumes:
-      - db-data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: ${DATABASE_NAME}
-      POSTGRES_USER: ${DATABASE_USERNAME}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      - db-data:/var/lib/postgresql
     networks:
-      - swim_net
+      - swimpro_net
+    ports:
+      - "5432:5432"
     healthcheck:
       test: ["CMD", "pg_isready"]
       interval: 10s
       timeout: 5s
       retries: 5
+    env_file: .env.prod
 
-networks:
-  swim_net:
-    driver: bridge
 
-volumes:
-  db-data:
 

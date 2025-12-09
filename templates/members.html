@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{%  block title %}{% trans "Members"%}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Members"%}</h1>
+    {% for entry in persons %}
+        <div class="card">
+            <div class="card-header">
+                {{ entry.name }} {{ entry.sir_name }}
+            </div>
+            <div class="card-body">
+                {% trans "Birthday" %}: {{ entry.birthday }}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

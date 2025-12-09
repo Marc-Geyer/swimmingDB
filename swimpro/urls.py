@@ -5,6 +5,7 @@ from .views import *
 
 urlpatterns = [
     path("", index.index, name="index"),
+    path("members", members.members, name="members"),
 ]
 
 

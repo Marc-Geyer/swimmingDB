@@ -25,5 +25,10 @@ class Accreditation(models.Model):
         A_TRAININGS_LICENSE = 'AL', _('A-Training license')
 
     id = NanoidField(max_length=20, primary_key=True, unique=True, editable=False)
-    Person = models.ForeignKey('Person', on_delete=models.CASCADE)
+    Person = models.ForeignKey("Person", on_delete=models.CASCADE)
     type = models.CharField(max_length=2, choices=Type)
+    date = models.DateField()
+    valid_until = models.DateField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'accreditation'

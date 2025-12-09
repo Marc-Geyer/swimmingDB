@@ -19,10 +19,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.i18n import JavaScriptCatalog
 
-import swimpro
-
 urlpatterns = [
-    path('', include(swimpro.urls)),
+    path('', include("swimpro.urls")),
     path('admin/', admin.site.urls),
 ]
 

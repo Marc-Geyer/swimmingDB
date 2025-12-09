@@ -1,3 +1,2 @@
-*/.env.dev
-*/.env.prod
 /venv
+/.env.prod

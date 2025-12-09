@@ -1,0 +1,18 @@
+<h2>Pending User Approvals</h2>
+
+{% if pending %}
+    <ul>
+        {% for user in pending %}
+            <li>
+                {{ user.username }} — {{ user.email }}
+                <form method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <button class="btn btn-success btn-sm">Approve</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No pending users.</p>
+{% endif %}

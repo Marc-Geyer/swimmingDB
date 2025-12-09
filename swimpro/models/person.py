@@ -19,7 +19,8 @@ class Person(models.Model):
         ],
         default=1,
     )
-    birthday = models.DateField()
+    is_approved = models.BooleanField(default=False)
+    birthday = models.DateField(blank=True, null=True)
 
     class Meta:
         db_table = 'person'

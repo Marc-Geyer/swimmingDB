@@ -13,9 +13,9 @@
         <li class="nav-item">
           <a class="nav-link{% if request.path == '/' %} active{% endif %}" href="{% url 'index' %}">Home</a>
         </li>
-{#        <li class="nav-item">#}
-{#          <a class="nav-link" href="{% url 'members' %}">Mitglieder</a>#}
-{#        </li>#}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'members' %}">Mitglieder</a>
+        </li>
         <!-- add more nav links, maybe conditionally based on user privileges -->
 {#        {% if user.is_authenticated and user.has_perm('some_permission') %}#}
 {#        <li class="nav-item">#}

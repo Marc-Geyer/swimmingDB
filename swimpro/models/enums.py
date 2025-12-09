@@ -8,6 +8,9 @@ class City(models.Model):
     class Meta:
         db_table = 'city'
 
+    def __str__(self):
+        return self.name
+
 
 class Facility(models.Model):
     class Types(models.TextChoices):
@@ -23,10 +26,11 @@ class Facility(models.Model):
     name = models.CharField()
     type = models.CharField(choices=Types.choices, max_length=10)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
-    postal_code = models.IntegerField()
+    postal_code = models.CharField(max_length=5, blank=True)
     street_address = models.TextField()
 
     class Meta:
         db_table = 'facility'
 
-
+    def __str__(self):
+        return self.name

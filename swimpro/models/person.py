@@ -19,7 +19,7 @@ class Person(models.Model):
         ],
         default=1,
     )
-    birthday = models.DateField()
+    birthday = models.DateField(null=True, blank=True)
 
     class Meta:
         db_table = 'person'

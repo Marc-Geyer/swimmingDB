@@ -27,6 +27,7 @@ services:
         django-admin compilemessages --ignore=cache --ignore=outdated/*/locale &&
         python manage.py migrate &&
         python manage.py createsuperuser --noinput || true &&
+        python manage.py loaddata locations_base &&
         python manage.py runserver 0.0.0.0:8000
       "
     networks:

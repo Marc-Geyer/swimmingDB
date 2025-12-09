@@ -24,8 +24,9 @@ services:
     command: >
       sh -c "
         django-admin makemessages -a --i manage.py --i node_modules --i venv --i static &&
-        django-admin compilemessages --ignore=cache --ignore=outdated/*/locale&&
+        django-admin compilemessages --ignore=cache --ignore=outdated/*/locale &&
         python manage.py migrate &&
+        python manage.py createsuperuser --noinput || true &&
         python manage.py runserver 0.0.0.0:8000
       "
     networks:

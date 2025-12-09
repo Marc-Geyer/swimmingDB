@@ -1,5 +1,6 @@
 import enum
 
+from django.contrib.auth.models import User
 from django.db import models
 from nanoid_field import NanoidField
 from django.utils.translation import gettext_lazy as _
@@ -7,12 +8,24 @@ from django.utils.translation import gettext_lazy as _
 
 class Person(models.Model):
     id = NanoidField(max_length=20, primary_key=True, unique=True, editable=False)
-    name = models.CharField(max_length=100)
-    sir_name = models.CharField(max_length=100)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='person')
+    name = models.CharField(max_length=200)
+    privilege_level = models.PositiveSmallIntegerField(
+        choices=[
+            (1, "Viewer"),
+            (2, "Editor"),
+            (3, "Manager"),
+            (4, "Admin"),
+        ],
+        default=1,
+    )
     birthday = models.DateField()
 
     class Meta:
         db_table = 'person'
+
+    def __str__(self):
+        return self.name
 
 
 class Accreditation(models.Model):

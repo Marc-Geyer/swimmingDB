@@ -36,7 +36,7 @@ LOCALE_PATHS = [
     BASE_DIR / 'app/locale',
     BASE_DIR / 'swimpro/locale',
 ]
-USE_I18N = True
+USE_I18N = False
 
 # Application definition
 INSTALLED_APPS = [
@@ -58,6 +58,8 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     "django.middleware.locale.LocaleMiddleware",
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'swimpro.middleware.LoginRequiredMiddleware',
+    'swimpro.middleware.AttachPersonMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]

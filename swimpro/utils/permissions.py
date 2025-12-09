@@ -17,6 +17,9 @@ def require_privilege(level):
 
             # 2. Ensure the Person object exists
             if not hasattr(user, "person"):
+                # treat no related person as viewer
+                if level == 1:
+                    return view_func(request, *args, **kwargs)
                 raise PermissionDenied("No Person profile linked to this user.")
 
             # 3. Check privilege level

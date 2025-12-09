@@ -3,3 +3,4 @@ psycopg2-binary ~= 2.9.11
 gunicorn ~= 23.0.0
 django-nanoid-field ~= 0.1.4
 django-recurrence ~= 1.11.1
+django-widget-tweaks ~=1.5.0

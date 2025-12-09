@@ -7,7 +7,7 @@ from swimpro.utils.permissions import require_privilege
 
 @require_privilege(1)
 def members(request):
-    persons = get_entries(Person, {}, ['sir_name','name'])
+    persons = get_entries(Person, {}, ['name'])
 
     context = {'persons': persons}
 

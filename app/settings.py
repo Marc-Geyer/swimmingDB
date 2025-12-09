@@ -27,16 +27,6 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","127.0.0.1").split(",")
 
-# Setup and enable localisation
-LANGUAGES = [
-    ("en", "English"),
-    ("de", "German"),
-]
-LOCALE_PATHS = [
-    BASE_DIR / 'app/locale',
-    BASE_DIR / 'swimpro/locale',
-]
-USE_I18N = False
 
 # Application definition
 INSTALLED_APPS = [
@@ -49,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'nanoid_field',
     'recurrence',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +47,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    "django.middleware.locale.LocaleMiddleware",
+    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'swimpro.middleware.LoginRequiredMiddleware',
     'swimpro.middleware.AttachPersonMiddleware',
@@ -123,15 +114,27 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGIN_REDIRECT_URL = "/"
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'de'
+
+LANGUAGES = [
+    ("en", "English"),
+    ("de", "German"),
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / 'app/locale',
+    BASE_DIR / 'swimpro/locale',
+]
+
+USE_I18N = False
 
 TIME_ZONE = 'UTC'
-
-USE_I18N = True
 
 USE_TZ = True
 

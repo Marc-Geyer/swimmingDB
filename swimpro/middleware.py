@@ -10,17 +10,12 @@ class LoginRequiredMiddleware:
     def __call__(self, request):
         path = request.path.lower()
         if any(keyword in path for keyword in self.PUBLIC_PATHS):
-            print(f"enter public path {request.path}")
             return self.get_response(request)
 
         user = getattr(request, "user", None)
         if not user:
-            print("no user")
-            print(request)
-            return redirect("/")
             return redirect("login")
         if not user.is_authenticated:
-            print("not logged in")
             return redirect("login")
 
         return self.get_response(request)

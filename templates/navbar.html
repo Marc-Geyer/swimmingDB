@@ -23,6 +23,10 @@
 {#        </li>#}
 {#        {% endif %}#}
       </ul>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button class="btn button btn-danger" type="submit">Logout</button>
+        </form>
     </div>
   </div>
 </nav>

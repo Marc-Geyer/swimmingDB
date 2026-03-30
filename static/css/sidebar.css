@@ -1,0 +1,173 @@
+/* Sidebar Styles */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 250px;
+  background-color: #343a40;
+  color: white;
+  padding: 0;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.sidebar.collapsed {
+  transform: translateX(-250px);
+}
+
+.sidebar-header {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-header .navbar-brand {
+  margin: 0;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.sidebar-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.sidebar-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-nav .nav-item {
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.sidebar-nav .nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.sidebar-nav .nav-link:hover {
+  background-color: rgba(255,255,255,0.1);
+  color: white;
+}
+
+.sidebar-nav .nav-link.active {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.sidebar-nav .nav-link i {
+  margin-right: 0.5rem;
+  width: 20px;
+  text-align: center;
+}
+
+.sidebar-footer {
+  padding: 1rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  position: sticky;
+  bottom: 0;
+  background-color: #343a40;
+}
+
+/* Main Content Area */
+.main-content {
+  margin-left: 250px;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+
+  /* Ensure content doesn't go under the toggle button */
+  padding-top: 4rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.main-content.expanded {
+  margin-left: 0;
+}
+
+/* Toggle Button Styling with Fade Effect */
+.sidebar-toggle {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1001;
+  background-color: #343a40;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+
+  /* Transition for smooth fade */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transform: scale(0.9);
+}
+
+/* Visible state */
+.sidebar-toggle.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+}
+
+/* Hide toggle button when sidebar is open */
+.sidebar.show + .main-content .sidebar-toggle,
+.sidebar.show ~ .main-content .sidebar-toggle {
+  display: none !important;
+}
+
+/* Or use sibling selector if elements are adjacent */
+.sidebar.show ~ .sidebar-toggle {
+  display: none !important;
+}
+
+/* Desktop: Sidebar always visible */
+@media (min-width: 768px) {
+  .sidebar-close {
+    display: none !important;
+  }
+
+  .sidebar-toggle {
+    display: none !important;
+  }
+
+  .sidebar.collapsed {
+    transform: translateX(-250px);
+  }
+
+  .main-content.expanded {
+    margin-left: 0;
+  }
+}
+
+/* Mobile: Sidebar hidden by default */
+@media (max-width: 767px) {
+  .sidebar {
+    transform: translateX(-250px);
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding-top: 4rem; /* Keep padding on mobile too */
+  }
+}
+

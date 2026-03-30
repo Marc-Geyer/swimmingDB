@@ -6,11 +6,14 @@ from recurrence.fields import RecurrenceField
 
 class TrainingGroup(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50)
-    short_name = models.CharField(max_length=15)
+    name = models.CharField(max_length=100)
+    short_name = models.CharField(max_length=30)
 
     class Meta:
         db_table = 'training_group'
+
+    def __str__(self):
+        return self.short_name
 
 
 class TrainingTime(models.Model):
@@ -24,6 +27,9 @@ class TrainingTime(models.Model):
     class Meta:
         db_table = 'training_time'
 
+    def __str__(self):
+        return f"{self.training_time} [{self.group}] ({self.place})"
+
 
 class TrainingSession(models.Model):
     id = models.AutoField(primary_key=True)
@@ -33,6 +39,9 @@ class TrainingSession(models.Model):
 
     class Meta:
         db_table = 'training_session'
+
+    def __str__(self):
+        return f"{self.training_time.group} [{self.datetime}]"
 
 
 class Attendance(models.Model):
@@ -46,3 +55,6 @@ class Attendance(models.Model):
 
     class Meta:
         db_table = 'attendance'
+
+    def __str__(self):
+        return f"{self.training} [{self.person}]"

@@ -1,0 +1,38 @@
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a class="navbar-brand" href="{% url 'index' %}">SwimPro</a>
+    <button class="sidebar-close d-md-none" id="sidebarClose">
+      <span>&times;</span>
+    </button>
+  </div>
+
+  <ul class="sidebar-nav">
+    <li class="nav-item">
+      <a class="nav-link{% if request.path == '/' %} active{% endif %}" href="{% url 'index' %}">
+        <i class="bi bi-house"></i> Home
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'members' %}">
+        <i class="bi bi-people"></i> Mitglieder
+      </a>
+    </li>
+
+    {# Admin link - uncomment and customize permission as needed #}
+    {# {% if user.is_authenticated and user.has_perm('some_permission') %} #}
+    {# <li class="nav-item">#}
+    {#   <a class="nav-link" href="{% url 'admin_panel' %}"> #}
+    {#     <i class="bi bi-shield-lock"></i> Admin #}
+    {#   </a>#}
+    {# </li>#}
+    {# {% endif %} #}
+  </ul>
+
+  <div class="sidebar-footer">
+    <form action="{% url 'logout' %}" method="post">
+      {% csrf_token %}
+      <button class="btn btn-danger w-100" type="submit">Logout</button>
+    </form>
+  </div>
+</nav>
+

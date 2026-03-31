@@ -1,9 +1,8 @@
-import enum
-
 from django.contrib.auth.models import User
 from django.db import models
 from nanoid_field import NanoidField
 from django.utils.translation import gettext_lazy as _
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Person(models.Model):
@@ -21,6 +20,8 @@ class Person(models.Model):
         default=1,
     )
     birthday = models.DateField(null=True, blank=True)
+    e_mail = models.EmailField(null=True, blank=True)
+    phone_number = PhoneNumberField(null=True, blank=True)
 
     class Meta:
         db_table = 'person'

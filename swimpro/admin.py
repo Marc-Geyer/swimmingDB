@@ -7,6 +7,8 @@ from swimpro.models import *
 admin.site.register(Person)
 admin.site.register(Accreditation)
 
+admin.site.register(TrainingGroupMembership)
+
 admin.site.register(TrainingGroup)
 admin.site.register(TrainingTime)
 admin.site.register(TrainingSession)

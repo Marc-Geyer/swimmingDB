@@ -1,7 +1,7 @@
 from django.db.models import QuerySet, Model
 
 
-def get_entries(model: type[Model], filter, order_by):
+def get_entries(model: type[Model], filter=None, order_by=None):
     entries: QuerySet
     if filter:
         entries = model.objects.filter(**filter)

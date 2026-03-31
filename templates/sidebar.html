@@ -19,13 +19,18 @@
     </li>
 
     {# Admin link - uncomment and customize permission as needed #}
-    {# {% if user.is_authenticated and user.has_perm('some_permission') %} #}
-    {# <li class="nav-item">#}
-    {#   <a class="nav-link" href="{% url 'admin_panel' %}"> #}
-    {#     <i class="bi bi-shield-lock"></i> Admin #}
-    {#   </a>#}
-    {# </li>#}
-    {# {% endif %} #}
+    {% if person and person.privilege_level == 4 %}
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'admin' %}">
+          <i class="bi bi-shield-lock"></i> Admin
+        </a>
+      </li>
+    {% endif %}
+    {% if user %}
+      <li class="nav-item">
+        <i class="bi bi-calendar-week"></i> Meine Termine
+      </li>
+    {% endif %}
   </ul>
 
   <div class="sidebar-footer">

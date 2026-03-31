@@ -8,6 +8,10 @@ class TrainingGroup(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     short_name = models.CharField(max_length=30)
+    members = models.ManyToManyField(
+        'Person',
+        through='TrainingGroupMembership'
+    )
 
     class Meta:
         db_table = 'training_group'

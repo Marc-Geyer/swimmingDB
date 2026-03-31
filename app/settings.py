@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'nanoid_field',
     'recurrence',
     'widget_tweaks',
+    "accounts",
 ]
 
 MIDDLEWARE = [
@@ -115,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LOGIN_REDIRECT_URL = "/"
-
+LOGOUT_REDIRECT_URL = "/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -153,3 +154,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Nanoid settings
 NANOID_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-"
 NANOID_SIZE = 21
+
+# DEBUG: emails get printed into console
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

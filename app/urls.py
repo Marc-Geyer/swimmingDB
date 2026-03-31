@@ -20,8 +20,10 @@ from django.urls import path, include
 from django.views.i18n import JavaScriptCatalog
 
 urlpatterns = [
-    path('', include("swimpro.urls")),
-    path('admin/', admin.site.urls, name="admin"),
+
+    path('admin/', admin.site.urls),
+    path("auth/", include("accounts.urls")),
+    path('', include("swimpro.urls", namespace="home")),
 ]
 
 urlpatterns += i18n_patterns(

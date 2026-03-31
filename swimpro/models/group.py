@@ -10,6 +10,7 @@ class TrainingGroup(models.Model):
     short_name = models.CharField(max_length=30)
     members = models.ManyToManyField(
         'Person',
+        related_name='groups',
         through='TrainingGroupMembership'
     )
 

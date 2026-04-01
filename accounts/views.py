@@ -162,7 +162,7 @@ def activate_account(request, uidb64, token):
         # 2. Perform the Person Match Check
         match_found = False
         matched_person = None
-
+        # TODO Solid implementation alwong user 1 -> * Persons relations viwth throughmodel
         try:
             # Attempt to find a Person with this exact email
             matched_person = Person.objects.get(email=user.e_mail)

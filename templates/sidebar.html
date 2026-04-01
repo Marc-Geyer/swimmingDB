@@ -37,10 +37,15 @@
 
   <div class="sidebar-footer">
     {% if user.is_authenticated %}
-      <form action="{% url 'auth:logout' %}" method="post">
-        {% csrf_token %}
-        <button class="btn btn-danger w-100" type="submit">Logout</button>
-      </form>
+      <div class="hstack gap-2">
+        <form action="{% url 'auth:logout' %}" method="post">
+          {% csrf_token %}
+          <button class="btn btn-danger w-100" type="submit">Logout</button>
+        </form>
+        <div class="hstack gap-2">
+          <a class="btn btn-secondary" href="{% url 'auth:settings' %}"><i class="bi bi-gear"></i></a>
+        </div>
+      </div>
     {% else %}
       <div class="hstack gap-2">
         <a class="btn btn-primary w-100" href="{% url 'auth:login' %}">Login</a>

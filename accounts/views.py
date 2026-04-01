@@ -1,4 +1,8 @@
-from django.contrib.auth import login
+import re
+
+from django.contrib import messages
+from django.contrib.auth import login, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import PasswordResetView
@@ -28,6 +32,103 @@ def register(request):
         form = CustomUserCreationForm()
     return render(request, 'registration/signup.html', {'form': form})
 
+
+@login_required
+def account_settings(request):
+    """
+    Handles updating username, email (with confirmation), and password.
+    """
+    if request.method == 'POST':
+        # 1. Extract Data
+        new_username = request.POST.get('username', '').strip()
+        new_email = request.POST.get('email', '').strip().lower()
+        email_confirm = request.POST.get('email_confirm', '').strip().lower()
+        new_password1 = request.POST.get('new_password1', '')
+        new_password2 = request.POST.get('new_password2', '')
+
+        # 2. Validation Flags
+        is_valid = True
+
+        # --- Username Validation ---
+        if new_username and new_username != request.user.username:
+            if len(new_username) < 3:
+                messages.error(request, "Username must be at least 3 characters long.")
+                is_valid = False
+            elif User.objects.filter(username=new_username).exists():
+                messages.error(request, "This username is already taken.")
+                is_valid = False
+            # Optional: Regex for valid username characters
+            elif not re.match(r'^[\w.@+-]+$', new_username):
+                messages.error(request, "Username can only contain letters, numbers, and @/./+/-/_ characters.")
+                is_valid = False
+
+        # --- Email Validation & Confirmation ---
+        if new_email and new_email != request.user.email:
+            if new_email != email_confirm:
+                messages.error(request, "The new email and confirmation email do not match.")
+                is_valid = False
+            elif User.objects.filter(email=new_email).exists():
+                messages.error(request, "An account with this email already exists.")
+                is_valid = False
+            else:
+                # Basic email format check (Django forms usually handle this better, but good for raw POST)
+                if '@' not in new_email or '.' not in new_email:
+                    messages.error(request, "Please enter a valid email address.")
+                    is_valid = False
+
+        # --- Password Validation ---
+        if new_password1 or new_password2:
+            if not new_password1 or not new_password2:
+                messages.error(request, "Both password fields are required to change the password.")
+                is_valid = False
+            elif new_password1 != new_password2:
+                messages.error(request, "Passwords do not match.")
+                is_valid = False
+            elif len(new_password1) < 8:
+                messages.error(request, "Password must be at least 8 characters long.")
+                is_valid = False
+            # Optional: Add complexity checks here (digits, uppercase, etc.)
+
+        # 3. Process Changes if Valid
+        if is_valid:
+            try:
+                # Update Username
+                if new_username and new_username != request.user.username:
+                    request.user.username = new_username
+
+                # Update Email
+                if new_email and new_email != request.user.email:
+                    # TODO person handling + validation
+                    request.user.email = new_email
+
+                # Update Password
+                if new_password1:
+                    request.user.set_password(new_password1)
+                    # Keep user logged in after password change
+                    update_session_auth_hash(request, request.user)
+
+                request.user.save()
+                messages.success(request, "Your account settings have been updated successfully.")
+                return redirect('settings')  # Redirect to clear POST data
+
+            except Exception as e:
+                messages.error(request, f"An error occurred while updating your account: {str(e)}")
+
+    # 4. Render Template
+    # We pass the current user's data to pre-fill the form fields
+    context = {
+        'form': {
+            'username': request.user.username,
+            'email': request.user.email,
+            # Password fields are empty by default for security
+            'new_password1': '',
+            'new_password2': '',
+        },
+        # You can also pass the raw user object if your template prefers accessing user.username directly
+        'user': request.user
+    }
+
+    return render(request, 'registration/settings.html', context)
 
 def send_verification_email(request, user):
     """Generates token and sends email"""
@@ -85,14 +186,14 @@ def activate_account(request, uidb64, token):
 
         # 4. Redirect with status
         # You can pass the status as a query param or rely on the session
-        # TODO integrate into user settings
+        # TODO intigrate status message
         if match_found:
-            return redirect(f'/dashboard/?status=matched&person_id={matched_person.id}')
+            return redirect('settings')
         else:
-            return redirect('/dashboard/?status=no_match')
+            return redirect('settings')
 
     else:
-        return render(request, 'activation_invalid.html', {'error': 'Invalid link'})
+        return render(request, 'registration/activation_invalid.html', {'error': 'Invalid link'})
 
 class CustomPasswordResetView(PasswordResetView):
     success_url = reverse_lazy('auth:password_reset_done')

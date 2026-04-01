@@ -42,7 +42,11 @@
         <button class="btn btn-danger w-100" type="submit">Logout</button>
       </form>
     {% else %}
-      <a class="btn btn-danger w-100" href="{% url 'auth:login' %}">Login</a>
+      <div class="hstack gap-2">
+        <a class="btn btn-primary w-100" href="{% url 'auth:login' %}">Login</a>
+        <a class="btn btn-secondary w-100" href="{% url 'auth:signup' %}">Sign up</a>
+      </div>
+
     {% endif %}
   </div>
 </nav>

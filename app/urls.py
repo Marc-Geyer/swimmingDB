@@ -22,7 +22,7 @@ from django.views.i18n import JavaScriptCatalog
 urlpatterns = [
 
     path('admin/', admin.site.urls),
-    path("auth/", include("accounts.urls")),
+    path("account/", include("accounts.urls")),
     path('', include("swimpro.urls", namespace="home")),
 ]
 

@@ -155,5 +155,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 NANOID_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-"
 NANOID_SIZE = 21
 
+
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'test@swimpro.com')
 # DEBUG: emails get printed into console
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

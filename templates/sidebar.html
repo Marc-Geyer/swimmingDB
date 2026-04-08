@@ -19,13 +19,13 @@
     </li>
 
     {# Admin link - uncomment and customize permission as needed #}
-{#    {% if user and user.is_staff%}#}
-{#      <li class="nav-item">#}
-{#        <a class="nav-link" href="{% url 'admin' %}">#}
-{#          <i class="bi bi-shield-lock"></i> Admin#}
-{#        </a>#}
-{#      </li>#}
-{#    {% endif %}#}
+    {% if user and user.is_staff%}
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'admin:index' %}">
+          <i class="bi bi-shield-lock"></i> Admin
+        </a>
+      </li>
+    {% endif %}
     {% if user.is_authenticated %}
       <li class="nav-item">
         <a class="nav-link" href="{% url 'swimpro:session' %}">

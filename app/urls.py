@@ -23,7 +23,7 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
     path("account/", include("accounts.urls")),
-    path('', include("swimpro.urls", namespace="home")),
+    path('', include("swimpro.urls")),
 ]
 
 urlpatterns += i18n_patterns(

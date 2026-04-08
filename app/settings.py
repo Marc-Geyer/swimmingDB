@@ -27,6 +27,8 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","127.0.0.1").split(",")
 
+AUTH_USER_MODEL = 'accounts.SwimProUser'
+LOGIN_URL = 'auth:login'
 
 # Application definition
 INSTALLED_APPS = [

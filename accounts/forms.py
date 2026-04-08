@@ -17,3 +17,32 @@ class CustomUserCreationForm(UserCreationForm):
         if User.objects.filter(email__iexact=email).exists():
             raise ValidationError("A user with this email address is already registered.")
         return email
+
+
+class EmailChangeForm(forms.Form):
+    email = forms.EmailField(
+        label="New Email Address",
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter new email',
+            'autofocus': True
+        }),
+        help_text="Please enter your new email address."
+    )
+    email_confirm = forms.EmailField(
+        label="Confirm New Email",
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Repeat new email'
+        })
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        email_confirm = cleaned_data.get("email_confirm")
+
+        if email and email_confirm and email != email_confirm:
+            raise forms.ValidationError("The email addresses do not match.")
+
+        return cleaned_data

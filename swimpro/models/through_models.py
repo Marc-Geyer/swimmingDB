@@ -1,6 +1,8 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from app.settings import AUTH_USER_MODEL
 from swimpro.models import TrainingGroup, Person
 
 
@@ -18,3 +20,16 @@ class TrainingGroupMembership(models.Model):
     class Meta:
         db_table = 'training_group_membership'
         unique_together = ['training_group', 'person']
+
+class UserPerson(models.Model):
+    class Relation(models.TextChoices):
+        SELF = 'self', _('Self')
+        PARENT = 'parent', _('Parent')
+
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    relation = models.CharField(max_length=50, choices=Relation, default=Relation.SELF)
+
+    class Meta:
+        db_table = 'user_person'
+        unique_together = ['user', 'person']

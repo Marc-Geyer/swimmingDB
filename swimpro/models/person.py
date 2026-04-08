@@ -7,7 +7,8 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 class Person(models.Model):
     id = NanoidField(max_length=20, primary_key=True, unique=True, editable=False)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='person', null=True, blank=True)
+    # TODO: Replace with UserPeron model reference
+    # user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='person', null=True, blank=True)
     name = models.CharField(max_length=200, default="")
     last_name = models.CharField(max_length=200, default="")
     privilege_level = models.PositiveSmallIntegerField(

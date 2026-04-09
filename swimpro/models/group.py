@@ -1,7 +1,8 @@
-from datetime import datetime
-
+from django.utils.translation import gettext_lazy as _
 from django.db import models
-from recurrence.fields import RecurrenceField
+
+from app.settings import AUTH_USER_MODEL
+from swimpro.models import Facility
 
 
 class TrainingGroup(models.Model):
@@ -10,7 +11,7 @@ class TrainingGroup(models.Model):
     short_name = models.CharField(max_length=30)
     members = models.ManyToManyField(
         'Person',
-        related_name='groups',
+        related_name='group',
         through='TrainingGroupMembership'
     )
 
@@ -21,45 +22,119 @@ class TrainingGroup(models.Model):
         return self.short_name
 
 
-class TrainingTime(models.Model):
-    id = models.AutoField(primary_key=True)
-    training_time = models.DateTimeField()
-    group = models.ForeignKey("TrainingGroup", on_delete=models.CASCADE)
-    place = models.ForeignKey("swimpro.Facility",null=True, on_delete=models.SET_NULL)
-    duration = models.DurationField()
-    recurrences = RecurrenceField()
+class TrainingPlan(models.Model):
+    """Defines the repeating rule (e.g., 'Every Monday 18:00')."""
+    group = models.ForeignKey(TrainingGroup, on_delete=models.CASCADE)
+    coach = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='plans')
+    location = models.ForeignKey(Facility, on_delete=models.SET_NULL, null=True, related_name='plans')
 
-    class Meta:
-        db_table = 'training_time'
+    # Recurrence settings
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)  # None means infinite
+    frequency_days = models.IntegerField(default=7)  # 7 = weekly, 1 = daily
+
+    # Time slot
+    start_time = models.TimeField()
+    duration_minutes = models.IntegerField(default=60)
+
 
     def __str__(self):
-        return f"{self.training_time} [{self.group}] ({self.place})"
+        return f"{self.group.name} ({self.start_time})"
+
+    class Meta:
+        db_table = 'training_plan'
+        ordering = ['-start_date']
+
+
+class PlanException(models.Model):
+    """
+    Defines a break or override that can apply to ONE or MANY plans.
+    Supports single-day or multi-day timespans (e.g., 'Christmas Break 2024').
+    """
+    TYPE_CHOICES = [
+        ('SKIP', _('Holiday / Cancelled')),
+        ('OVERRIDE', _('Time Change')),
+    ]
+
+    # The Many-to-Many relationship
+    plans = models.ManyToManyField(
+        TrainingPlan,
+        related_name='exceptions',
+        help_text=_("Select all training plans affected by this exception.")
+    )
+    reason = models.CharField(max_length=200, blank=True, help_text=_("e.g., 'School Holiday', 'Coach Sick'"))
+    exception_type = models.CharField(max_length=10, choices=TYPE_CHOICES)
+
+    # Timespan support
+    start_date = models.DateField(help_text=_("First affected date"))
+    end_date = models.DateField(null=True, blank=True, help_text=_("Last affected date (leave empty for single-day)"))
+
+    # If OVERRIDE, store new time
+    new_start_time = models.DateTimeField(null=True, blank=True)
+    new_duration = models.IntegerField(null=True, blank=True)
+
+    def clean(self):
+        """Validate that end_date >= start_date if provided."""
+        from django.core.exceptions import ValidationError
+        if self.end_date and self.end_date < self.start_date:
+            raise ValidationError({'end_date': _("End date cannot be before start date.")})
+
+    def affected_dates(self):
+        """
+        Generator yielding all dates covered by this exception.
+        Returns single date if end_date is None.
+        """
+        from datetime import timedelta
+        current = self.start_date
+        end = self.end_date or self.start_date
+
+        while current <= end:
+            yield current
+            current += timedelta(days=1)
+
+    def __str__(self):
+        if self.end_date:
+            return f"{self.reason} ({self.start_date} - {self.end_date})"
+        return f"{self.reason} ({self.start_date})"
+
+    class Meta:
+        db_table = 'plan_exception'
+        verbose_name_plural = _("Plan Exceptions")
 
 
 class TrainingSession(models.Model):
-    id = models.AutoField(primary_key=True)
-    training_time = models.ForeignKey("TrainingTime", on_delete=models.CASCADE)
-    datetime = models.DateTimeField(default=datetime.now)
-    plan = models.TextField(null=True, blank=True)
+    """The actual instance. Generated dynamically or manually."""
+    plan = models.ForeignKey(TrainingPlan, on_delete=models.CASCADE, related_name='sessions')
+    session_date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    # Specific data for THIS session
+    location = models.CharField(max_length=100, blank=True)  # e.g., "Pool A"
+    notes = models.TextField(blank=True)
+    is_cancelled = models.BooleanField(default=False)
+
+    # Attendance tracking (Many-to-Many if swimmers can vary per session)
+    attendees = models.ManyToManyField('swimpro.Person', through='Attendance', blank=True)
 
     class Meta:
         db_table = 'training_session'
+        unique_together = ['plan', 'session_date']
+        ordering = ['-session_date']
 
     def __str__(self):
-        return f"{self.training_time.group} [{self.datetime}]"
+        status = _(" (Cancelled)" )if self.is_cancelled else ""
+        return f"{self.session_date} {self.start_time} - {status}"
 
 
 class Attendance(models.Model):
-    id = models.AutoField(primary_key=True)
-    training = models.ForeignKey("TrainingSession", on_delete=models.CASCADE)
-    person = models.ForeignKey("swimpro.Person", on_delete=models.CASCADE)
-
-    attended = models.BooleanField(default=False)
-    lane = models.IntegerField(null=True, blank=True)
-    notes = models.TextField(null=True, blank=True)
+    """Link table for session attendance with extra data (e.g., score, notes)."""
+    session = models.ForeignKey(TrainingSession, on_delete=models.CASCADE)
+    swimmer = models.ForeignKey('swimpro.Person', on_delete=models.CASCADE)
+    score = models.IntegerField(null=True, blank=True)
+    notes = models.TextField(blank=True)
+    attended = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'attendance'
-
-    def __str__(self):
-        return f"{self.training} [{self.person}]"
+        unique_together = ['session', 'swimmer']

@@ -25,16 +25,16 @@ services:
       sh -c "
         echo 'Starting setup...' &&
         python manage.py makemessages -a --i manage.py --i node_modules --i venv --i static || true &&
-        python manage.py compilemessages --ignore=cache --ignore=outdated/*/locale || true &&
         echo 'Running migrations...' &&
         python manage.py migrate &&
         echo 'Creating superuser...' &&
         python manage.py createsuperuser --noinput || true &&
         echo 'Loading fixtures...' &&
-        python manage.py loaddata locations_base &&
+        python manage.py loaddata locations_base user_test_data&&
         echo 'Starting server...' &&
         python manage.py runserver 0.0.0.0:8000
       "
+#      python manage.py compilemessages --ignore=cache --ignore=outdated/*/locale || true &&
     networks:
       - swimpro_dev_network
     ports:

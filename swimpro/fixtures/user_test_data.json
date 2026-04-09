@@ -1,0 +1,166 @@
+[
+  {
+    "model": "accounts.swimprouser",
+    "pk": "usr_parent_mueller_01",
+    "fields": {
+      "password": "pbkdf2_sha256$600000$dummy$dummy",
+      "username": "thomas.mueller",
+      "email": "thomas.mueller@beispiel.de",
+      "first_name": "Thomas",
+      "last_name": "Müller",
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "role": "parent",
+      "privilege_level": 2,
+      "pending_email": null,
+      "email_verification_pending": false,
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "swimpro.person",
+    "pk": "per_thomas_mueller",
+    "fields": {
+      "user": "usr_parent_mueller_01",
+      "name": "Thomas",
+      "last_name": "Müller",
+      "birth_date": "1985-05-12",
+      "e_mail": "thomas.mueller@beispiel.de",
+      "phone_number": "+491711234567"
+    }
+  },
+  {
+    "model": "swimpro.person",
+    "pk": "per_emma_mueller",
+    "fields": {
+      "user": "usr_parent_mueller_01",
+      "name": "Emma",
+      "last_name": "Müller",
+      "birth_date": "2016-03-20",
+      "e_mail": "thomas.mueller@beispiel.de",
+      "phone_number": "+491711234567"
+    }
+  },
+  {
+    "model": "swimpro.person",
+    "pk": "per_lukas_mueller",
+    "fields": {
+      "user": "usr_parent_mueller_01",
+      "name": "Lukas",
+      "last_name": "Müller",
+      "birth_date": "2018-11-05",
+      "e_mail": "thomas.mueller@beispiel.de",
+      "phone_number": "+491711234567"
+    }
+  },
+  {
+    "model": "accounts.swimprouser",
+    "pk": "usr_single_kid_schmidt",
+    "fields": {
+      "password": "pbkdf2_sha256$600000$dummy$dummy",
+      "username": "anna.schmidt",
+      "email": "anna.schmidt@beispiel.de",
+      "first_name": "Anna",
+      "last_name": "Schmidt",
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "role": "swimmer",
+      "privilege_level": 1,
+      "pending_email": null,
+      "email_verification_pending": false,
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "swimpro.person",
+    "pk": "per_anna_schmidt",
+    "fields": {
+      "user": "usr_single_kid_schmidt",
+      "name": "Anna",
+      "last_name": "Schmidt",
+      "birth_date": "2015-07-14",
+      "e_mail": "anna.schmidt@beispiel.de",
+      "phone_number": "+491729876543"
+    }
+  },
+  {
+    "model": "accounts.swimprouser",
+    "pk": "usr_adult_weber",
+    "fields": {
+      "password": "pbkdf2_sha256$600000$dummy$dummy",
+      "username": "julia.weber",
+      "email": "julia.weber@beispiel.de",
+      "first_name": "Julia",
+      "last_name": "Weber",
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "role": "parent",
+      "privilege_level": 2,
+      "pending_email": null,
+      "email_verification_pending": false,
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "swimpro.person",
+    "pk": "per_julia_weber",
+    "fields": {
+      "user": "usr_adult_weber",
+      "name": "Julia",
+      "last_name": "Weber",
+      "birth_date": "1992-09-30",
+      "e_mail": "julia.weber@beispiel.de",
+      "phone_number": "+491735551234"
+    }
+  },
+  {
+    "model": "accounts.swimprouser",
+    "pk": "usr_guardian_fischer",
+    "fields": {
+      "password": "pbkdf2_sha256$600000$dummy$dummy",
+      "username": "michael.fischer",
+      "email": "michael.fischer@beispiel.de",
+      "first_name": "Michael",
+      "last_name": "Fischer",
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "role": "parent",
+      "privilege_level": 2,
+      "pending_email": null,
+      "email_verification_pending": false,
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "swimpro.person",
+    "pk": "per_sophie_fischer",
+    "fields": {
+      "user": "usr_guardian_fischer",
+      "name": "Sophie",
+      "last_name": "Fischer",
+      "birth_date": "2017-02-18",
+      "e_mail": "michael.fischer@beispiel.de",
+      "phone_number": "+491741112222"
+    }
+  },
+  {
+    "model": "swimpro.person",
+    "pk": "per_max_fischer",
+    "fields": {
+      "user": "usr_guardian_fischer",
+      "name": "Max",
+      "last_name": "Fischer",
+      "birth_date": "2019-06-25",
+      "e_mail": "michael.fischer@beispiel.de",
+      "phone_number": "+491741112222"
+    }
+  }
+]

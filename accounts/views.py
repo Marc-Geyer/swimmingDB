@@ -13,6 +13,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 from accounts.forms import CustomUserCreationForm, EmailChangeForm
+from accounts.models import SwimProUser
 from app import settings
 from swimpro.models import Person
 
@@ -221,37 +222,24 @@ def activate_account(request, uidb64, token):
         user.save()
 
         # 2. Perform the Person Match Check
-        match_found = False
-        matched_person = None
-        # TODO Solid implementation alwong user 1 -> * Persons relations viwth throughmodel
-        try:
-            # Attempt to find a Person with this exact email
-            matched_person = Person.objects.get(email=user.e_mail)
-            match_found = True
-
-            # Optional: Link the user to the person if you have a UserProfile
-            # profile, created = UserProfile.objects.get_or_create(user=user)
-            # profile.person = matched_person
-            # profile.save()
-
-            # Or simply log it / set a flag in session for the frontend
-            request.session['person_match_status'] = 'found'
-            request.session['person_id'] = matched_person.id
-
-        except Person.DoesNotExist:
-            match_found = False
-            request.session['person_match_status'] = 'not_found'
+        # Attempt to find a Persons with this exact email
+        matched_persons = Person.objects.filter(e_mail=user.email)
+        if matched_persons:
+            for person in matched_persons:
+                person.user = user
+                person.save(update_fields=['user'])
 
         # 3. Log the user in automatically
         login(request, user)
 
         # 4. Redirect with status
-        # You can pass the status as a query param or rely on the session
-        # TODO intigrate status message
-        if match_found:
-            return redirect('settings')
+        messages.success(request, "You have successfully activated your account.")
+        if matched_persons:
+            messages.success(request, "You where successfully matched with a Person on record")
+            return redirect('auth:settings')
         else:
-            return redirect('settings')
+            messages.warning(request, "You have not matched with a Person on record")
+            return redirect('auth:settings')
 
     else:
         return render(request, 'registration/verification_invalid.html', {'error': 'Invalid link'})

@@ -1,26 +1,22 @@
-from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
 from nanoid_field import NanoidField
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
+from app.settings import AUTH_USER_MODEL
+
 
 class Person(models.Model):
     id = NanoidField(max_length=20, primary_key=True, unique=True, editable=False)
-    # TODO: Replace with UserPeron model reference
-    # user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='person', null=True, blank=True)
+    user = models.ForeignKey(
+        AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='persons',
+        null=True, blank=True)
     name = models.CharField(max_length=200, default="")
     last_name = models.CharField(max_length=200, default="")
-    privilege_level = models.PositiveSmallIntegerField(
-        choices=[
-            (1, "Viewer"),
-            (2, "Editor"),
-            (3, "Manager"),
-            (4, "Admin"),
-        ],
-        default=1,
-    )
-    birthday = models.DateField(null=True, blank=True)
+    birth_date = models.DateField(null=True, blank=True)
     e_mail = models.EmailField(null=True, blank=True)
     phone_number = PhoneNumberField(null=True, blank=True)
 
@@ -29,6 +25,23 @@ class Person(models.Model):
 
     def __str__(self):
         return f"{self.name} {self.last_name}"
+
+    def get_age(self) -> int:
+        """
+        Calculates the exact age in years based on the current local date.
+        Returns 0 if birth_date is not set.
+        """
+        if not self.birth_date:
+            return 0
+
+        today = timezone.localdate()
+        age = today.year - self.birth_date.year
+
+        # Adjust if birthday hasn't happened yet this year
+        if (today.month, today.day) < (self.birth_date.month, self.birth_date.day):
+            age -= 1
+
+        return age
 
 
 class Accreditation(models.Model):

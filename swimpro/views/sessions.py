@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from swimpro.models import TrainingSession, TrainingTime
+from swimpro.models import TrainingSession, TrainingPlan
 from swimpro.utils.permissions import require_privilege
 from swimpro.views.util import get_entries
 
@@ -9,7 +9,7 @@ from swimpro.views.util import get_entries
 def sessions(request):
     person = request.person
 
-    training_times = get_entries(TrainingTime, {})
+    training_times = get_entries(TrainingPlan, {})
     training_sessions = get_entries(TrainingSession, {})
 
     context = {"person": person, "times": training_times, "sessions": training_sessions}

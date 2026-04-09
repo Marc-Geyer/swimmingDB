@@ -23,7 +23,7 @@ def require_privilege(level):
                 raise PermissionDenied("No Person profile linked to this user.")
 
             # 3. Check privilege level
-            if user.person.privilege_level < level:
+            if user.privilege_level < level:
                 return HttpResponseForbidden("You do not have permission to access this.")
 
             return view_func(request, *args, **kwargs)

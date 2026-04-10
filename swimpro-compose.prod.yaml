@@ -16,21 +16,39 @@ networks:
 volumes:
   db-data:
 
+x-server-template: &server
+  build:
+    context: .
+    dockerfile: Dockerfile.prod
+  container_name: swimpro
+  env_file: .env.prod
+  restart: always
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+  networks:
+    - swimpro_net
+  healthcheck:
+    test: [ "CMD", "curl", "-f", "http://localhost:8000/admin/" ]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+
+
 services:
-  swim-pro:
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
-    container_name: swimpro
-    env_file: .env.prod
-    restart: always
-    ports:
-      - "9000:8000"
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - swimpro_net
+  web:
+    <<: *server
+    container_name: swimpro-wsgi
+    environment:
+      - SERVER_TYPE=wsgi
+
+  websocket:
+    <<: *server
+    container_name: swimpro-asgi
+    environment:
+      - SERVER_TYPE=asgi
 
   nginx:
     image: nginx:alpine
@@ -38,11 +56,13 @@ services:
     restart: always
     ports:
       - "80:80"
+      - "443:443"
     volumes:
-      - ./nginx/nginx.config:/etc/nginx/nginx.config:ro
+      - ./nginx/nginx.config:/etc/nginx/nginx.conf:ro
       - ./staticfiles:/app/staticfiles:ro
     depends_on:
-      - swim-pro
+      - web
+      - websocket
     networks:
       - swimpro_net
 

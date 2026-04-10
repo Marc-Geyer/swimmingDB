@@ -37,6 +37,7 @@ RUN adduser \
 # Install gettext for translations
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gettext \
+    curl\
  && rm -rf /var/lib/apt/lists/*
 
 
@@ -49,16 +50,38 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     python -m pip install -r requirements.txt
 
 # Compile translations for production
-RUN python manage.py compilemessages --settings=app.settings
-
-# Switch to the non-privileged user to run the application.
-USER appuser
+# RUN python manage.py compilemessages --settings=app.settings
 
 # Copy the source code into the container.
 COPY . .
+
+# Create entrypoint script as root
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+case "$SERVER_TYPE" in\n\
+    wsgi)\n\
+        echo "Starting Gunicorn (WSGI) server..."\n\
+        exec gunicorn --bind 0.0.0.0:8000 app.wsgi:application\n\
+        ;;\n\
+    asgi)\n\
+        echo "Starting Daphne (ASGI) server..."\n\
+        exec daphne -b 0.0.0.0 -p 8000 app.asgi:application\n\
+        ;;\n\
+    *)\n\
+        echo "Invalid SERVER_TYPE: $SERVER_TYPE. Using default (asgi)"\n\
+        exec daphne -b 0.0.0.0 -p 8000 app.asgi:application\n\
+        ;;\n\
+esac' > /entrypoint.sh && chmod +x /entrypoint.sh
+
+# Give appuser ownership of /app directory
+RUN chown -R appuser:appuser /app
+
+# Switch to the non-privileged user to run the application.
+USER appuser
 
 # Expose the port that the application listens on.
 EXPOSE 8000
 
 # Run the application.
-CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "app.asgi:application"]
+ENTRYPOINT ["/entrypoint.sh"]

@@ -30,6 +30,11 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","127.0.0.1").split(",")
 AUTH_USER_MODEL = 'accounts.SwimProUser'
 LOGIN_URL = 'auth:login'
 
+
+ASGI_APPLICATION = 'app.asgi.application'
+
+WSGI_APPLICATION = 'app.wsgi.application'
+
 # Application definition
 INSTALLED_APPS = [
     'swimpro.apps.SwimproConfig',
@@ -40,17 +45,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'nanoid_field',
-    'recurrence',
     'widget_tweaks',
     "accounts",
+    "channels"
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
+    # 'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'swimpro.middleware.LoginRequiredMiddleware',
     'swimpro.middleware.AttachPersonMiddleware',
@@ -79,8 +85,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / "staticfiles"  # for production
 
-WSGI_APPLICATION = 'app.wsgi.application'
-
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
@@ -98,6 +103,15 @@ DATABASES = {
      }
  }
 
+# websocket
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('redis', 6379)],
+        },
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

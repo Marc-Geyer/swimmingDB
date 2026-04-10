@@ -8,8 +8,7 @@ app_name = "swimpro"
 
 urlpatterns = [
     path("", index.index, name="index"),
-    # path("login/", login.LoginView.as_view(), name="login"),
-    # path("logout/", LogoutView.as_view(next_page="index"), name="logout"),
+    path("test-ws/", index.websocket_test,  name="websocket_test"),
     path("members", members.members, name="members"),
     path("session/", sessions.sessions, name="session"),
 ]

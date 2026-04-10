@@ -7,3 +7,9 @@ django-widget-tweaks ~=1.5.0
 
 django-phonenumber-field ~=8.4.0
 phonenumbers ~= 9.0.26
+
+# websockets
+channels ~= 4.3.2
+channels-redis ~= 4.3.0
+daphne ~= 4.2.1
+whitenoise ~= 6.12.0

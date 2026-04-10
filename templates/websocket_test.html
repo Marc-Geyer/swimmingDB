@@ -1,0 +1,83 @@
+<!-- templates/websocket_test.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Test</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+        #log { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; background: #f9f9f9; margin-bottom: 1rem; }
+        .msg { margin: 5px 0; padding: 5px; border-radius: 4px; }
+        .client { background-color: #e3f2fd; text-align: right; }
+        .server { background-color: #e8f5e9; text-align: left; }
+        .error { color: red; }
+        input { padding: 10px; width: 70%; }
+        button { padding: 10px 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Connection Test</h1>
+    <div id="status">Status: <span id="status-text">Connecting...</span></div>
+
+    <div id="log"></div>
+
+    <form id="chat-form">
+        <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off">
+        <button type="submit">Send</button>
+    </form>
+
+    <script>
+        const logDiv = document.getElementById('log');
+        const statusText = document.getElementById('status-text');
+        const form = document.getElementById('chat-form');
+        const input = document.getElementById('message-input');
+
+        // Connect to WebSocket
+        // Note: Use 'ws://' for http and 'wss://' for https
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.host}/ws/chat/`;
+
+        const socket = new WebSocket(wsUrl);
+
+        socket.onopen = function(e) {
+            statusText.textContent = "Connected ✅";
+            statusText.style.color = "green";
+            addLog("System", "Connected to server.", "server");
+        };
+
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            addLog("Server", data.message, "server");
+        };
+
+        socket.onclose = function(event) {
+            statusText.textContent = "Disconnected ❌";
+            statusText.style.color = "red";
+            addLog("System", "Connection closed.", "error");
+        };
+
+        socket.onerror = function(error) {
+            addLog("System", "Error: " + error, "error");
+        };
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Send to server
+            socket.send(JSON.stringify({ message: message }));
+            addLog("You", message, "client");
+            input.value = '';
+        });
+
+        function addLog(sender, text, type) {
+            const div = document.createElement('div');
+            div.className = `msg ${type}`;
+            div.innerHTML = `<strong>${sender}:</strong> ${text}`;
+            logDiv.appendChild(div);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+    </script>
+</body>
+</html>

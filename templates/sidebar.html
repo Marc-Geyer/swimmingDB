@@ -1,0 +1,61 @@
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a class="navbar-brand" href="{% url 'swimpro:index' %}">SwimPro</a>
+    <button class="sidebar-close d-md-none" id="sidebarClose">
+      <span>&times;</span>
+    </button>
+  </div>
+
+  <ul class="sidebar-nav">
+    <li class="nav-item">
+      <a class="nav-link{% if request.path == '/' %} active{% endif %}" href="{% url 'swimpro:index' %}">
+        <i class="bi bi-house"></i> Home
+      </a>
+    </li>
+    {% if user.is_authenticated %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'swimpro:members' %}">
+        <i class="bi bi-people"></i> Mitglieder
+      </a>
+    </li>
+    {% endif %}
+
+    {# Admin link - uncomment and customize permission as needed #}
+    {% if user and user.is_staff%}
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'admin:index' %}">
+          <i class="bi bi-shield-lock"></i> Admin
+        </a>
+      </li>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'swimpro:session' %}">
+          <i class="bi bi-calendar-week"></i> Meine Termine
+        </a>
+      </li>
+    {% endif %}
+  </ul>
+
+  <div class="sidebar-footer">
+    {% if user.is_authenticated %}
+      <div class="hstack gap-2">
+        <form action="{% url 'auth:logout' %}" method="post">
+          {% csrf_token %}
+          <button class="btn btn-danger w-100" type="submit">Logout</button>
+        </form>
+        <div class="hstack gap-2">
+          <a class="btn btn-secondary" href="{% url 'auth:settings' %}"><i class="bi bi-gear"></i></a>
+        </div>
+      </div>
+    {% else %}
+      <div class="hstack gap-2">
+        <a class="btn btn-primary w-100" href="{% url 'auth:login' %}">Login</a>
+        <a class="btn btn-secondary w-100" href="{% url 'auth:signup' %}">Sign up</a>
+      </div>
+
+    {% endif %}
+  </div>
+</nav>
+

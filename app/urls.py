@@ -14,12 +14,31 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.urls import path, include
-
-import swimpro
+from django.views.i18n import JavaScriptCatalog
 
 urlpatterns = [
-    path('', include(swimpro.urls)),
+
     path('admin/', admin.site.urls),
+    path("account/", include("accounts.urls")),
+    path('', include("swimpro.urls", namespace="swimpro")),
 ]
+
+urlpatterns += i18n_patterns(
+    path('', include("swimpro.urls")),
+)
+
+# Setup needed reccurence field
+
+# If you already have a js_info_dict dictionary, just add
+# 'recurrence' to the existing 'packages' tuple.
+js_info_dict = {
+    'packages': ('recurrence', ),
+}
+# jsi18n can be anything you like here
+# TODO Figure out making it work
+# urlpatterns += [
+#     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), js_info_dict),
+# ]

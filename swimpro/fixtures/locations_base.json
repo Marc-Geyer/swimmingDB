@@ -1,0 +1,113 @@
+[
+  {
+    "model": "swimpro.city",
+    "pk": 1,
+    "fields":
+    {
+      "name": "Leipzig"
+    }
+  },
+  {"model": "swimpro.facility",
+    "pk": 1,
+    "fields":
+    {
+      "name": "Uni - WSZ",
+      "type": "ID50",
+      "city": 1,
+      "postal_code": "04109",
+      "street_address": "Mainzer Straße 4"
+    }
+  },
+  {"model": "swimpro.facility",
+    "pk": 2,
+    "fields":
+    {
+      "name": "Schwimmhalle Mitte",
+      "type": "ID25",
+      "city": 1,
+      "postal_code": "04155",
+      "street_address": "Kirschbergstraße 84"
+    }
+  },
+  {"model": "swimpro.facility",
+    "pk": 3,
+    "fields":
+    {"name": "Schwimmhalle Nord",
+      "type": "ID25",
+      "city": 1,
+      "postal_code": "04129",
+      "street_address": "Kleistraße 54"
+    }
+  },
+  {"model": "swimpro.facility",
+    "pk": 4,
+    "fields":
+    {
+      "name": "Schwimmhalle Nordost",
+      "type": "ID25",
+      "city": 1,
+      "postal_code": "04347",
+      "street_address": "Schönefelder Allee 26"
+    }
+  },
+  {"model": "swimpro.facility",
+    "pk": 5,
+    "fields":
+    {"name": "Sportbad am Rabet",
+      "type": "ID25",
+      "city": 1,
+      "postal_code": "04315",
+      "street_address": "Otto-Runki-Platz 1"
+    }
+  },
+  {"model": "swimpro.facility",
+    "pk": 6,
+    "fields":
+    {"name": "Schwimmhalle Südost",
+      "type": "ID25",
+      "city": 1,
+      "postal_code": "04299",
+      "street_address": "Kolmstraße 35"
+    }
+  },
+  {"model": "swimpro.facility",
+    "pk": 7,
+    "fields":
+    {"name": "Schwimmhalle Süd",
+      "type": "ID25",
+      "city": 1,
+      "postal_code": "04103",
+      "street_address": "Tarostraße 10"
+    }
+  },
+  {"model": "swimpro.facility",
+    "pk": 8,
+    "fields":
+    {"name": "Sportbad an der Elster",
+      "type": "ID50",
+      "city": 1,
+      "postal_code": "04229",
+      "street_address": "Antonienstraße 8"
+    }
+  },
+  {"model": "swimpro.facility",
+    "pk": 9,
+    "fields":
+    {"name": "Grünauer Welle",
+      "type": "ID25",
+      "city": 1,
+      "postal_code": "04209",
+      "street_address": "Stuttgarter Allee 7"
+    }
+  },
+  {"model": "swimpro.facility",
+    "pk": 10,
+    "fields":
+    {"name": "Schwimmhalle West",
+      "type": "ID25",
+      "city": 1,
+      "postal_code": "04179",
+      "street_address": "Hans-Driesch-Straße 52A"
+    }
+  }
+]

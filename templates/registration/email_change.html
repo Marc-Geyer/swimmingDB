@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow border-0">
+        <div class="card-body p-4">
+          <h3 class="text-center mb-4">Change Email Address</h3>
+
+          {% if messages %}
+          {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+          {% endfor %}
+          {% endif %}
+
+          <form method="post" novalidate>
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label class="form-label">Current Email</label>
+              <input type="email" class="form-control" value="{{ user.email }}" disabled>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">New Email Address</label>
+              {{ form.email|add_class:"form-control"|attr:"placeholder:Enter new email" }}
+              {{ form.email.errors }}
+            </div>
+
+            <div class="mb-3">
+              <label for="email_confirm" class="form-label">Confirm New Email</label>
+              <input type="email" name="email_confirm" class="form-control" placeholder="Repeat new email">
+              {{ form.email_confirm.errors }}
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+              <button type="submit" class="btn btn-success">Send Verification Email</button>
+              <a href="{% url 'auth:settings' %}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

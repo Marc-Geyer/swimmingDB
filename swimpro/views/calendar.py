@@ -1,0 +1,57 @@
+from django.shortcuts import render
+from django.http import JsonResponse
+
+from datetime import date, timedelta
+from django.utils import timezone
+
+from swimpro.models import TrainingSession
+
+
+def calendar_view(request):
+    return render(request, 'calendar.html')
+
+
+def calendar_data(request):
+    """
+    API endpoint to fetch sessions for a specific range.
+    Query params: start_date, end_date
+    """
+    try:
+        start_str = request.GET.get('start_date')
+        end_str = request.GET.get('end_date')
+
+        if not start_str or not end_str:
+            # Default to current month if not provided
+            today = timezone.now().date()
+            start = today.replace(day=1)
+            end = (today.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
+        else:
+            start = date.fromisoformat(start_str)
+            end = date.fromisoformat(end_str)
+
+        sessions = TrainingSession.objects.filter(
+            session_date__gte=start,
+            session_date__lte=end
+        ).select_related('plan').order_by('session_date', 'start_time')
+
+        data = []
+        for s in sessions:
+            data.append({
+                'id': s.id,
+                'title': f"{s.plan.group.name} Training" if s.plan else "Unknown Session",
+                'start': f"{s.session_date}T{s.start_time}",
+                'end': f"{s.session_date}T{s.end_time}",
+                'allDay': False,
+                'extendedProps': {
+                    'is_cancelled': s.is_cancelled,
+                    'location': s.location,
+                    'notes': s.notes,
+                    'plan_id': s.plan.id if s.plan else None
+                },
+                'className': 'cancelled' if s.is_cancelled else ''
+            })
+
+        return JsonResponse(data, safe=False)
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)

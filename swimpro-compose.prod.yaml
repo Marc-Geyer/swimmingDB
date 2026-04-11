@@ -15,6 +15,7 @@ networks:
 
 volumes:
   db-data:
+  static-files:
 
 x-server-template: &server
   build:
@@ -23,6 +24,8 @@ x-server-template: &server
   container_name: swimpro
   env_file: .env.prod
   restart: always
+  volumes:
+    - static-files:/app/staticfiles
   depends_on:
     db:
       condition: service_healthy
@@ -59,7 +62,7 @@ services:
       - "443:443"
     volumes:
       - ./nginx/nginx.config:/etc/nginx/nginx.conf:ro
-      - ./staticfiles:/app/staticfiles:ro
+      - static-files:/app/staticfiles:ro
     depends_on:
       - web
       - websocket

@@ -20,3 +20,18 @@ class TrainingGroupMembership(models.Model):
     class Meta:
         db_table = 'training_group_membership'
         unique_together = ['training_group', 'person']
+
+
+class UserPerson(models.Model):
+    class Relation(models.TextChoices):
+        SELF = 'self', _('Self')
+        CHILD = 'child', _('Child')
+        PARENT = 'parent', _('Parent')
+
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    relation = models.CharField(max_length=10, choices=Relation, default=Relation.SELF)
+
+    class Meta:
+        db_table = 'user_person'
+        unique_together = ['user', 'person']

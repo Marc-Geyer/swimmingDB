@@ -8,23 +8,43 @@ from app.settings import AUTH_USER_MODEL
 
 
 class Person(models.Model):
+    class Role(models.TextChoices):
+        SWIMMER = 'S', _('Swimmer')
+        TRAINER_ASSISTANT = 'A', _('Trainer Assistant')
+        TRAINER = 'T', _('Trainer')
+        ADMIN = 'X', _('Admin')
+
+    # Define the hierarchy levels (Higher number = Higher privilege)
+    ROLE_LEVELS = {
+        Role.SWIMMER: 1,
+        Role.TRAINER_ASSISTANT: 2,
+        Role.TRAINER: 3,
+        Role.ADMIN: 4,
+    }
+
     id = NanoidField(max_length=20, primary_key=True, unique=True, editable=False)
-    user = models.ForeignKey(
+    user = models.ManyToManyField(
         AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='persons',
-        null=True, blank=True)
-    name = models.CharField(max_length=200, default="")
-    last_name = models.CharField(max_length=200, default="")
+        through='swimpro.UserPerson',
+        related_name='person',
+        blank=True)
+    first_name = models.CharField(max_length=100, default="")
+    last_name = models.CharField(max_length=100, default="")
+    role = models.CharField(choices=Role, default=Role.SWIMMER, max_length=2)
     birth_date = models.DateField(null=True, blank=True)
     e_mail = models.EmailField(null=True, blank=True)
     phone_number = PhoneNumberField(null=True, blank=True)
 
     class Meta:
         db_table = 'person'
+        ordering = ('last_name', 'first_name', 'role')
+
+    def get_role_level(self):
+        """Returns the integer level of the current role."""
+        return self.ROLE_LEVELS.get(self.role, 0)
 
     def __str__(self):
-        return f"{self.name} {self.last_name}"
+        return f"{self.first_name} {self.last_name}"
 
     def get_age(self) -> int:
         """

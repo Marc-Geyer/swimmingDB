@@ -170,10 +170,15 @@ NANOID_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwx
 NANOID_SIZE = 21
 
 
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'test@swimpro.com')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'info@swimpro.com')
+
 # DEBUG: emails get printed into console
 if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_HOST = 'smtp.example.com'  # has to be adapted
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
 
 LOGGING = {
     'version': 1,

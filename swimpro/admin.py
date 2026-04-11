@@ -2,10 +2,11 @@ from django.contrib import admin
 
 from swimpro.models import *
 
-
 admin.site.register(Accreditation)
 
 admin.site.register(TrainingGroupMembership)
+admin.site.register(UserPerson)
+
 
 admin.site.register(TrainingGroup)
 admin.site.register(TrainingPlan)
@@ -18,24 +19,44 @@ admin.site.register(Facility)
 
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
+    def get_linked_users_with_relation(self, obj):
+        """Returns 'Username (Relation)' for each link."""
+        # Query the through model directly to get the relation field
+        links = UserPerson.objects.filter(person=obj).select_related('user')
+
+        if not links.exists():
+            return "-"
+
+        parts = []
+        for link in links:
+            username = link.user.username
+            relation_label = link.get_relation_display()  # Gets "Self", "Child", etc.
+            parts.append(f"{username} ({relation_label})")
+
+        return ", ".join(parts)
+
+    # Configure the display settings for the method
+    get_linked_users_with_relation.short_description = "Users & Relations"
+    get_linked_users_with_relation.admin_order_field = 'user__username'  # Optional: allows sorting by this column
+    get_linked_users_with_relation.allow_tags = True  # Deprecated in newer Django, but harmless if kept for compatibility
 
     list_display = (
-        "name",
+        "first_name",
         "last_name",
         "birth_date",
         "e_mail",
-        "user"
+        "get_linked_users_with_relation"
     )
 
     list_filter = (
-        "name",
+        "first_name",
         "last_name",
         "birth_date",
     )
 
-    ordering = ("user",)
+    ordering = ('last_name', 'first_name')
 
-    search_fields = ("name", "last_name", "e_mail", )
+    search_fields = ("first_name", "last_name", "e_mail", "user__username")
 
 
 @admin.register(PlanException)

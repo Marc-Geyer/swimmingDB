@@ -13,7 +13,7 @@ class SwimProUserChangeForm(UserChangeForm):
 class SwimProUserCreationForm(UserCreationForm):
     class Meta:
         model = SwimProUser
-        fields = ("username", "email", "role", "privilege_level")
+        fields = ("username", "email")
 
 
 # 2. Admin-Klasse erstellen
@@ -22,42 +22,38 @@ class SwimProUserAdmin(BaseUserAdmin):
     form = SwimProUserChangeForm
     add_form = SwimProUserCreationForm
 
-    # Spalten in der Übersicht (List View)
+    # columns
     list_display = (
         "username",
         "email",
         "first_name",
         "last_name",
-        "role",
-        "privilege_level",
         "is_active",
         "is_staff",
         "date_joined"
     )
 
-    # Filter in der rechten Seitenleiste
+    # filters
     list_filter = (
         "is_staff",
         "is_active",
         "is_superuser",
-        "role",
-        "privilege_level",
         "groups"
     )
 
-    # Suchfelder (oben rechts)
+    # searchable fields
     search_fields = ("username", "email", "first_name", "last_name")
 
-    # Sortierung standardmäßig nach Benutzernamen
+    # sorting
     ordering = ("username",)
 
-    # Felder, die beim Erstellen angezeigt werden
+    # fields, shown oon object creation
     add_fieldsets = (
         (
             None,
             {
                 "classes": ("wide",),
-                "fields": ("username", "email", "password1", "password2", "role", "privilege_level"),
+                "fields": ("username", "email", "password1", "password2",),
             },
         ),
     )
@@ -67,12 +63,12 @@ class SwimProUserAdmin(BaseUserAdmin):
         (
             "SwimPro Profile",
             {
-                "fields": ("role", "privilege_level", "pending_email", "email_verification_pending"),
+                "fields": ("pending_email", "email_verification_pending"),
             },
         ),
     )
 
-    # Optional: Verhindern, dass Superuser gelöscht werden können
+    # Prevent superuser deletion
     def has_delete_permission(self, request, obj=None):
         if obj and obj.is_superuser:
             return False

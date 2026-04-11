@@ -19,6 +19,8 @@ from swimpro.models import Person
 
 from django.contrib.auth import get_user_model
 
+from swimpro.models.through_models import UserPerson
+
 User = get_user_model()
 
 def register(request):
@@ -226,8 +228,11 @@ def activate_account(request, uidb64, token):
         matched_persons = Person.objects.filter(e_mail=user.email)
         if matched_persons:
             for person in matched_persons:
-                person.user = user
-                person.save(update_fields=['user'])
+                relation, _ = UserPerson.objects.get_or_create(user=user, person=person)
+
+                if relation.person.get_age() < 14:
+                    relation.relation = UserPerson.Relation.CHILD
+                relation.save()
 
         # 3. Log the user in automatically
         login(request, user)

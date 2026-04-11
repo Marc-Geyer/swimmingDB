@@ -12,11 +12,13 @@
         <i class="bi bi-house"></i> Home
       </a>
     </li>
+    {% if user.is_authenticated %}
     <li class="nav-item">
       <a class="nav-link" href="{% url 'swimpro:members' %}">
         <i class="bi bi-people"></i> Mitglieder
       </a>
     </li>
+    {% endif %}
 
     {# Admin link - uncomment and customize permission as needed #}
     {% if user and user.is_staff%}
@@ -26,6 +28,7 @@
         </a>
       </li>
     {% endif %}
+
     {% if user.is_authenticated %}
       <li class="nav-item">
         <a class="nav-link" href="{% url 'swimpro:session' %}">

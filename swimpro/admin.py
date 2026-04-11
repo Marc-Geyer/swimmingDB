@@ -5,8 +5,6 @@ from swimpro.models import *
 admin.site.register(Accreditation)
 
 admin.site.register(TrainingGroupMembership)
-admin.site.register(UserPerson)
-
 
 admin.site.register(TrainingGroup)
 admin.site.register(TrainingPlan)
@@ -16,6 +14,23 @@ admin.site.register(Attendance)
 admin.site.register(City)
 admin.site.register(Facility)
 
+
+@admin.register(UserPerson)
+class UserPersonAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "user",
+        "person"
+    )
+
+    list_filter = (
+        "user",
+        "person",
+    )
+
+    ordering = ('user__username', 'person__last_name')
+
+    search_fields = ("user__username", "user__email", "person__first_name", "person__last_name")
 
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
@@ -31,7 +46,10 @@ class PersonAdmin(admin.ModelAdmin):
         for link in links:
             username = link.user.username
             relation_label = link.get_relation_display()  # Gets "Self", "Child", etc.
-            parts.append(f"{username} ({relation_label})")
+            if not relation_label == UserPerson.Relation.SELF:
+                parts.append(f" {relation_label} of {username}")
+            else:
+                parts.append(f"{username}")
 
         return ", ".join(parts)
 

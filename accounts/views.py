@@ -189,7 +189,7 @@ Your SwimPro Team
 """
     else:
         # For account activation
-        url_path = reverse('auth:activate_account', kwargs={'uidb64': uid, 'token': token})
+        url_path = reverse('auth:activate', kwargs={'uidb64': uid, 'token': token})
         subject = "Activate Your Account"
         message = f"""
 Hello,

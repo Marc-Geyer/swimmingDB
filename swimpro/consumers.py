@@ -85,9 +85,8 @@ async def broadcast_session_change(session, action):
     # Serialize minimal data needed for the frontend
     payload = {
         'id': session.id,
-        'date': str(session.session_date),
-        'start_time': str(session.start_time),
-        'end_time': str(session.end_time),
+        'start': str(session.start),
+        'end': str(session.end),
         'is_cancelled': session.is_cancelled,
         'notes': session.notes,
         'location': session.location,

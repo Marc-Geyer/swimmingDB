@@ -30,21 +30,22 @@ def calendar_data(request):
             end = date.fromisoformat(end_str)
 
         sessions = TrainingSession.objects.filter(
-            session_date__gte=start,
-            session_date__lte=end
-        ).select_related('plan').order_by('session_date', 'start_time')
+            start__gte=start,
+            end__lte=end
+        ).select_related('plan').order_by('start')
 
         data = []
         for s in sessions:
             data.append({
                 'id': s.id,
-                'title': f"{s.plan.group.name} Training" if s.plan else "Unknown Session",
-                'start': f"{s.session_date}T{s.start_time}",
-                'end': f"{s.session_date}T{s.end_time}",
+                'title': f"{s.plan.group.name} Training" if s.plan else s.name,
+                'start': f"{s.start.isoformat()}",
+                'end': f"{s.end.isoformat()}",
                 'allDay': False,
                 'extendedProps': {
                     'is_cancelled': s.is_cancelled,
-                    'location': s.location,
+                    'location': f"{s.location}",
+                    'type': s.type,
                     'notes': s.notes,
                     'plan_id': s.plan.id if s.plan else None
                 },

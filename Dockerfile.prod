@@ -55,6 +55,12 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 # Copy the source code into the container.
 COPY . .
 
+# Create the staticfiles directory as root
+RUN mkdir -p /app/staticfiles
+
+# Change ownership to appuser
+RUN chown -R appuser:appuser /app/staticfiles
+
 # Copy the entrypoint script
 # This ensures clean line endings regardless of OS
 COPY entrypoint.sh /entrypoint.sh

@@ -1,0 +1,79 @@
+[
+  {
+    "model": "swimpro.traininggroup",
+    "pk": 1,
+    "fields": {
+      "name": "Senior Squad",
+      "short_name": "Seniors"
+    }
+  },
+  {
+    "model": "swimpro.traininggroup",
+    "pk": 2,
+    "fields": {
+      "name": "Junior Squad",
+      "short_name": "Juniors"
+    }
+  },
+  {
+    "model": "swimpro.trainingplan",
+    "pk": 1,
+    "fields": {
+      "group": 1,
+      "coach": "usr_parent_mueller_01",
+      "location": 1,
+      "start_date": "2026-01-07",
+      "end_date": "2026-7-30",
+      "frequency_days": 7,
+      "start_time": "18:00:00",
+      "duration_minutes": 60
+    }
+  },
+  {
+    "model": "swimpro.planexception",
+    "pk": 1,
+    "fields": {
+      "reason": "Easter Holiday",
+      "exception_type": "SKIP",
+      "start_date": "2026-04-06",
+      "end_date": "2026-04-10",
+      "plans": [1]
+    }
+  },
+  {
+    "model": "swimpro.trainingsession",
+    "pk": 1,
+    "fields": {
+      "plan": 1,
+      "start": "2026-04-01T18:00:00",
+      "end": "2026-04-01T19:00:00",
+      "location": 1,
+      "notes": "Focus on starts",
+      "is_cancelled": false
+    }
+  },
+  {
+    "model": "swimpro.trainingsession",
+    "pk": 2,
+    "fields": {
+      "plan": 1,
+      "start": "2026-04-08T18:00:00",
+      "end": "2026-04-08T19:00:00",
+      "location": 1,
+      "notes": "Technique drills",
+      "is_cancelled": false
+    }
+  },
+  {
+    "model": "swimpro.trainingsession",
+    "pk": 3,
+    "fields": {
+      "plan": 1,
+      "start": "2026-04-15T18:00:00",
+      "end": "2026-04-15T19:00:00",
+      "location": 1,
+      "notes": "Race prep",
+      "is_cancelled": true
+    }
+  }
+]

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Calendar"%}{% endblock %}
+
+{% block content %}
+  <h1>{% trans "Training Calendar"%}</h1>
+
+  <!-- Container for FullCalendar -->
+  <div id="calendar" style="max-width: 1100px; margin: 20px auto;"></div>
+
+  <!-- Load FullCalendar JS -->
+  <script src='https://cdn.jsdelivr.net/npm/rrule@2.6.4/dist/es5/rrule.min.js'></script>
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js'></script>
+  <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/rrule@6.1.20/index.global.min.js'></script>
+
+  <script>
+    const DATA_URL = '{% url "swimpro:calendar_data" %}'
+    const WS_URL = `ws://${window.location.host}/ws/calendar/`
+  </script>
+
+  <script src="{% static 'js/calendar.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,104 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker Compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
+
+# Here the instructions define your application as a service called "server".
+# This service is built from the Dockerfile.prod in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
+version: "3.9"
+
+networks:
+  swimpro_net:
+    driver: bridge
+
+volumes:
+  db-data:
+  static-files:
+
+x-server-template: &server
+  build:
+    context: .
+    dockerfile: Dockerfile.prod
+  container_name: swimpro
+  env_file: .env.prod
+  restart: always
+  volumes:
+    - static-files:/app/staticfiles
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+  networks:
+    - swimpro_net
+  healthcheck:
+    test: [ "CMD", "curl", "-f", "http://localhost:8000/admin/" ]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+
+
+services:
+  web:
+    <<: *server
+    container_name: swimpro-wsgi
+    environment:
+      - SERVER_TYPE=wsgi
+
+  websocket:
+    <<: *server
+    container_name: swimpro-asgi
+    environment:
+      - SERVER_TYPE=asgi
+
+  nginx:
+    image: nginx:alpine
+    container_name: swimpro-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.config:/etc/nginx/nginx.conf:ro
+      - static-files:/app/staticfiles:ro
+    depends_on:
+      - web
+      - websocket
+    networks:
+      - swimpro_net
+
+  db:
+    image: postgres:16
+    container_name: swimpro-db
+    restart: always
+    volumes:
+      - db-data:/var/lib/postgresql
+    networks:
+      - swimpro_net
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    env_file: .env.prod
+
+  redis:
+    image: redis:7-alpine
+    container_name: swimpro-redis-prod
+    restart: always
+    networks:
+      - swimpro_net
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+

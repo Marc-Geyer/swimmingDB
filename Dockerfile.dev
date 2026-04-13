@@ -1,0 +1,30 @@
+# syntax=docker/dockerfile:1
+
+ARG PYTHON_VERSION=3.12.2
+FROM python:${PYTHON_VERSION}-slim AS dev
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Install necessary dev system deps
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    gettext \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python deps with caching
+RUN --mount=type=cache,target=/root/.cache/pip \
+    --mount=type=bind,source=requirements.txt,target=requirements.txt \
+    pip install --no-cache-dir -r requirements.txt
+
+# COPY is intentionally missing so that compose can mount your code
+# COPY . .
+
+EXPOSE 8000
+
+# Default command (will be overridden by compose if needed)
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

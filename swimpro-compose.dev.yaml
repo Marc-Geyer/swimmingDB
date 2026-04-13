@@ -1,0 +1,85 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker Compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
+
+# Here the instructions define your application as a service called "server".
+# This service is built from the Dockerfile.dev in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
+networks:
+  swimpro_dev_network:
+    driver: bridge
+
+volumes:
+ db-dev-data:
+
+services:
+  swim-pro-dev:
+    container_name: swimpro-dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    restart: always
+    command: >
+      sh -c "
+        echo 'Starting setup...' &&
+        python manage.py makemessages -a --i manage.py --i node_modules --i venv --i static || true &&
+        echo 'Running migrations...' &&
+        python manage.py migrate &&
+        echo 'Creating superuser...' &&
+        python manage.py createsuperuser --noinput || true &&
+        echo 'Loading fixtures...' &&
+        python manage.py loaddata locations_base user_test_data  calendar_test_data&&
+        echo 'Starting Daphne server for HTTP & WebSockets...' &&
+        daphne -b 0.0.0.0 -p 8000 app.asgi:application
+      "
+#      python manage.py compilemessages --ignore=cache --ignore=outdated/*/locale || true &&
+    networks:
+      - swimpro_dev_network
+    ports:
+      - "8000:8000"
+    depends_on:
+      db-dev:
+        condition: service_healthy
+      redis-dev:
+        condition: service_healthy
+    env_file:
+      - .env.dev
+    volumes:
+      - .:/app
+      - ./static:/app/static
+      - ./staticfiles:/app/staticfiles
+
+  db-dev:
+    container_name: swimpro-db-dev
+    image: postgres:16
+    restart: always
+    volumes:
+      - db-dev-data:/var/lib/postgresql
+    networks:
+      - swimpro_dev_network
+    ports:
+      - "5431:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    env_file: .env.dev
+
+  redis-dev:
+    image: redis:7-alpine
+    container_name: swimpro-redis-dev
+    restart: always
+    networks:
+      - swimpro_dev_network
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+

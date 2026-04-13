@@ -7,7 +7,6 @@
 # You can add other services your application may depend on here, such as a
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
-version: "3.9"
 
 networks:
   swimpro_net:
@@ -62,12 +61,23 @@ services:
       - "443:443"
     volumes:
       - ./nginx/nginx.config:/etc/nginx/nginx.conf:ro
+      - ./letsencrypt:/etc/letsencrypt:ro
       - static-files:/app/staticfiles:ro
     depends_on:
       - web
       - websocket
     networks:
       - swimpro_net
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+      - ./static-files:/var/www/staticfiles  # Optional: for ACME challenge
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    depends_on:
+      - nginx
 
   db:
     image: postgres:16

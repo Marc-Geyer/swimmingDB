@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import login_required
+
 from django.shortcuts import render
 from django.http import JsonResponse
 
@@ -7,10 +9,13 @@ from django.utils import timezone
 from swimpro.models import TrainingSession
 
 
+@login_required
 def calendar_view(request):
     return render(request, 'calendar.html')
 
 
+
+@login_required
 def calendar_data(request):
     """
     API endpoint to fetch sessions for a specific range.

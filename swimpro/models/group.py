@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 
@@ -103,14 +105,20 @@ class PlanException(models.Model):
 
 
 class TrainingSession(models.Model):
+    class Type(models.TextChoices):
+        TRAINING = 'TRAIN', _('Training')
+        COMPETITION = 'COMP', _('Competition')
+        OTHER = 'OTH', _('Other')
+
     """The actual instance. Generated dynamically or manually."""
-    plan = models.ForeignKey(TrainingPlan, on_delete=models.CASCADE, related_name='sessions')
-    session_date = models.DateField()
-    start_time = models.TimeField()
-    end_time = models.TimeField()
+    plan = models.ForeignKey(TrainingPlan, on_delete=models.SET_NULL, null=True, blank=True, related_name='sessions')
+    name = models.CharField(max_length=200, default="Undefined")
+    start = models.DateTimeField()
+    end = models.DateTimeField()
 
     # Specific data for THIS session
-    location = models.CharField(max_length=100, blank=True)  # e.g., "Pool A"
+    location = models.ForeignKey('swimpro.Facility', on_delete=models.SET_NULL, null=True, blank=True, related_name='sessions')
+    type = models.CharField(choices=Type, default=Type.TRAINING, max_length=10)
     notes = models.TextField(blank=True)
     is_cancelled = models.BooleanField(default=False)
 
@@ -119,12 +127,16 @@ class TrainingSession(models.Model):
 
     class Meta:
         db_table = 'training_session'
-        unique_together = ['plan', 'session_date']
-        ordering = ['-session_date']
+        unique_together = ['plan', 'start', 'end']
+        ordering = ['-start']
 
     def __str__(self):
         status = _(" (Cancelled)" )if self.is_cancelled else ""
-        return f"{self.session_date} {self.start_time} - {status}"
+        return f"{self.start.strftime("%A %d.%m.%Y %H:%M")} - {status}"
+
+    def duration(self) -> timedelta:
+        return  self.end - self.start
+
 
 
 class Attendance(models.Model):

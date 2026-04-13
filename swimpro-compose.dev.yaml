@@ -30,7 +30,7 @@ services:
         echo 'Creating superuser...' &&
         python manage.py createsuperuser --noinput || true &&
         echo 'Loading fixtures...' &&
-        python manage.py loaddata locations_base user_test_data&&
+        python manage.py loaddata locations_base user_test_data  calendar_test_data&&
         echo 'Starting Daphne server for HTTP & WebSockets...' &&
         daphne -b 0.0.0.0 -p 8000 app.asgi:application
       "
@@ -75,7 +75,7 @@ services:
     networks:
       - swimpro_dev_network
     ports:
-      - "6380:6379"
+      - "6379:6379"
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s

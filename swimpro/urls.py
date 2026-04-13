@@ -10,7 +10,9 @@ urlpatterns = [
     path("", index.index, name="index"),
     path("test-ws/", index.websocket_test,  name="websocket_test"),
     path("members", members.members, name="members"),
-    path("session/", sessions.sessions, name="session"),
+    path("calendar/", calendar.calendar_view, name="calendar"),
+
+    path("api/calendar-data/", calendar.calendar_data, name="calendar_data"),
 ]
 
 

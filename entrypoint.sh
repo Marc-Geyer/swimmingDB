@@ -10,7 +10,7 @@ echo "📦 Collecting static files..."
 python manage.py collectstatic --noinput
 
 echo "Creating superuser"
-python manage.py createsuperuser
+python manage.py createsuperuser --noinput || echo "Superuser already exists"
 
 case "$SERVER_TYPE" in
     wsgi)

@@ -3,5 +3,6 @@
 /.env.nginx
 
 /.idea
+/.idea/*
 
 /nginx/certbot/

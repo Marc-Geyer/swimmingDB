@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Dict, Generator, Optional, List
 from django.db.models import QuerySet, Q
+from django.utils import timezone
 
 from swimpro.models import TrainingSession, TrainingGroup, TrainingPlan, PlanException
 
@@ -93,7 +94,7 @@ def generate_planned_sessions(
 
             # Standard Generation
             # Combine plan start_date with plan start_time
-            session_dt = datetime.combine(current_date, plan.start_time)
+            session_dt = timezone.make_aware(datetime.combine(current_date, plan.start_time))
 
             # Ensure session is within the requested query window
             if session_dt >= start_dt and session_dt <= end_dt:

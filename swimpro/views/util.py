@@ -15,3 +15,4 @@ def get_entries(model: type[Model], filter=None, order_by=None):
             entries = entries.order_by(*order_by)
 
     return entries
+

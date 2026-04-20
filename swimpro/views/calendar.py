@@ -5,8 +5,10 @@ from django.http import JsonResponse
 
 from datetime import date, timedelta
 from django.utils import timezone
+from django.views.decorators.http import require_GET
 
-from swimpro.models import TrainingSession
+from swimpro.models import TrainingSession, TrainingGroup
+from swimpro.views.calendar_events import generate_calendar_events
 
 
 @login_required
@@ -16,48 +18,49 @@ def calendar_view(request):
 
 
 @login_required
-def calendar_data(request):
+@require_GET
+async def calendar_data(request):
     """
-    API endpoint to fetch sessions for a specific range.
-    Query params: start_date, end_date
+    API endpoint returning ALL events (Sessions + Calculated Plans) for the requested range.
+    Optimized to use the generate_calendar_events function.
     """
     try:
+        # Parse date range
         start_str = request.GET.get('start_date')
         end_str = request.GET.get('end_date')
 
         if not start_str or not end_str:
-            # Default to current month if not provided
+            # Default to current month
             today = timezone.now().date()
             start = today.replace(day=1)
-            end = (today.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
+            # Get last day of current month
+            if today.month == 12:
+                end = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
+            else:
+                end = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
         else:
             start = date.fromisoformat(start_str)
             end = date.fromisoformat(end_str)
 
-        sessions = TrainingSession.objects.filter(
-            start__gte=start,
-            end__lte=end
-        ).select_related('plan').order_by('start')
+        # 1. Fetch all groups (User specific logic will be added later: e.g., Group.objects.filter(members=user))
+        # For now, fetch all groups as requested
+        group_qs = TrainingGroup.objects.all()
 
-        data = []
-        for s in sessions:
-            data.append({
-                'id': s.id,
-                'title': f"{s.plan.group.name} Training" if s.plan else s.name,
-                'start': f"{s.start.isoformat()}",
-                'end': f"{s.end.isoformat()}",
-                'allDay': False,
-                'extendedProps': {
-                    'is_cancelled': s.is_cancelled,
-                    'location': f"{s.location}",
-                    'type': s.type,
-                    'notes': s.notes,
-                    'plan_id': s.plan.id if s.plan else None
-                },
-                'className': 'cancelled' if s.is_cancelled else ''
-            })
+        # 2. Generate events using the helper function
+        # We wrap the async function call since we are in an async view
+        all_events = await generate_calendar_events(group_qs)
 
-        return JsonResponse(data, safe=False)
+        # 3. Filter events by the requested date range on the backend (optional but recommended for large datasets)
+        # FullCalendar can handle this, but filtering reduces payload size
+        filtered_events = []
+        for event in all_events:
+            event_start = event['start'][:10] # Extract YYYY-MM-DD
+            if start <= date.fromisoformat(event_start) <= end:
+                filtered_events.append(event)
+
+        return JsonResponse(filtered_events, safe=False)
 
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
+        # Log error in production
+        print(f"Calendar Error: {e}")
+        return JsonResponse({'error': str(e)}, status=500)

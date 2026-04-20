@@ -11,9 +11,29 @@
   <div id="calendar" style="max-width: 1100px; margin: 20px auto;"></div>
 
   <!-- Load FullCalendar JS -->
-  <script src='https://cdn.jsdelivr.net/npm/rrule@2.6.4/dist/es5/rrule.min.js'></script>
   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js'></script>
-  <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/rrule@6.1.20/index.global.min.js'></script>
+
+  <!-- Modal Structure -->
+  <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="eventModalLabel">Event Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="eventModalBody">
+          <!-- Content injected via JS -->
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        <div class="modal-footer" id="eventModalFooter">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <!-- Dynamic Action Button (e.g., "Create Session") -->
+          <button type="button" class="btn btn-primary d-none" id="eventActionBtn">Action</button>
+        </div>
+      </div>
+    </div>
 
   <script>
     const DATA_URL = '{% url "swimpro:calendar_data" %}'

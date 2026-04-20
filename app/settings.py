@@ -24,16 +24,18 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","127.0.0.1").split(",")
 
-CSRF_TRUSTED_ORIGINS = ['https://swimpro-postsv.de']
-print(CSRF_TRUSTED_ORIGINS)
-print(type(CSRF_TRUSTED_ORIGINS))
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_SAMESITE = 'Lax'
-USE_X_FORWARDED_HOST = True
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "")
+
+if not DEBUG:
+    CSRF_TRUSTED_ORIGINS = ['https://swimpro-postsv.de']
+    print(CSRF_TRUSTED_ORIGINS)
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_SAMESITE = 'Lax'
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    USE_X_FORWARDED_HOST = True
 
 AUTH_USER_MODEL = 'accounts.SwimProUser'
 LOGIN_URL = 'auth:login'
@@ -67,8 +69,6 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     # 'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'swimpro.middleware.LoginRequiredMiddleware',
-    'swimpro.middleware.AttachPersonMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]

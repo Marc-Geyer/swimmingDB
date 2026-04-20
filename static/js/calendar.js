@@ -1,16 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
   var calendarEl = document.getElementById('calendar');
 
-  // Initial Fetch
-  fetch(DATA_URL)
-    .then(response => response.json())
-    .then(events => {
-        calendar.render();
-        calendar.addEventSource(events);
-    });
-
   var calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'dayGridMonth',
+    themeSystem: 'bootstrap5',
     headerToolbar: {
         left: 'prev,next today',
         center: 'title',
@@ -35,59 +28,51 @@ document.addEventListener('DOMContentLoaded', function() {
     locale: 'de',
     firstDay: 1,
 
-    events: [], // Populated by fetch above
+    events: [], // Will be populated by fetch
 
+    // Handle Click
     eventClick: function(info) {
-        alert('Session ID: ' + info.event.id + '\nLocation: ' + info.event.extendedProps.location);
+      const props = info.event.extendedProps;
+      let msg = `ID: ${info.event.id}\n`;
+
+      if (props.type === 'calculated') {
+        msg += `Type: Planned Event (Not yet created)\n`;
+        msg += `Plan ID: ${props.plan_id}\n`;
+        msg += `Action: Click to create session?`;
+      } else {
+        msg += `Type: Actual Session\n`;
+        msg += `Location: ${props.location || 'N/A'}\n`;
+        msg += `Status: ${props.is_cancelled ? 'Cancelled' : 'Active'}\n`;
+        if (props.notes) msg += `Notes: ${props.notes}`;
+      }
+
+      // In a real app, replace alert with a modal
+      if(confirm(msg)) {
+        if(props.type === 'calculated') {
+           // Trigger creation logic here
+           console.log("Creating session for plan:", props.plan_id);
+        }
+      }
     },
 
-    // Styling for cancelled events
     eventClassNames: function(arg) {
-        if (arg.event.extendedProps.is_cancelled) {
-            return ['bg-gray-300', 'text-gray-500']; // Tailwind classes or custom CSS
-        }
-        return [];
+      if (arg.event.extendedProps.is_cancelled) {
+        return ['bg-gray-300', 'text-gray-500', 'border-gray-400'];
+      }
+      return ['bg-blue-500', 'text-white'];
     }
   });
 
   calendar.render();
 
-  // WEBSOCKET CONNECTION
-  const socket = new WebSocket(WS_URL);
+   // 1. Initial Fetch
+  fetch(DATA_URL)
+    .then(response => response.json())
+    .then(events => {
+      calendar.addEventSource(events);
+      console.log("Loaded Events:", events)
+      calendar.render();
+    })
+    .catch(err => console.error("Error loading calendar:", err));
 
-  socket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-
-    if (data.type === 'session_change') {
-      const eventSource = calendar.getEventById(data.session_id.toString());
-
-      if (data.action === 'deleted') {
-          if (eventSource) eventSource.remove();
-      } else {
-        if (eventSource) {
-          // Update existing
-          eventSource.setProp('title', data.payload.title || eventSource.title);
-          eventSource.setStart(data.payload.start);
-          eventSource.setEnd(data.payload.end);
-          eventSource.setExtendedProp('is_cancelled', data.payload.is_cancelled);
-          eventSource.setExtendedProp('location', data.payload.location);
-          eventSource.setExtendedProp('notes', data.payload.notes);
-        } else {
-          // Add new (if it wasn't in the initial view range but came in via WS)
-          // Note: You might want to check if the date is in the current view before adding
-          calendar.addEvent({
-              id: data.payload.id,
-              title: 'New Session', // Ideally fetch full title from backend or pass in payload
-              start: data.payload.start,
-              end: data.payload.end,
-              extendedProps: data.payload
-          });
-        }
-      }
-    }
-  };
-
-  socket.onclose = function(e) {
-    console.error('Chat socket closed unexpectedly');
-  };
 });

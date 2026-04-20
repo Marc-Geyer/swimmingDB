@@ -24,6 +24,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 # COPY is intentionally missing so that compose can mount your code
 # COPY . .
 
+COPY dev-entrypoint.sh /app/dev-entrypoint.sh
+RUN chmod +x /app/dev-entrypoint.sh
+
 EXPOSE 8000
 
 # Default command (will be overridden by compose if needed)

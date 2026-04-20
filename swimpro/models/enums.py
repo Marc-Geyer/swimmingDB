@@ -34,3 +34,6 @@ class Facility(models.Model):
 
     def __str__(self):
         return self.name
+
+    def address(self):
+        return f"{self.street_address}, {self.postal_code} {self.city}"

@@ -21,24 +21,12 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     restart: always
-    command: >
-      sh -c "
-        echo 'Starting setup...' &&
-        python manage.py makemessages -a --i manage.py --i node_modules --i venv --i static || true &&
-        echo 'Running migrations...' &&
-        python manage.py migrate &&
-        echo 'Creating superuser...' &&
-        python manage.py createsuperuser --noinput || true &&
-        echo 'Loading fixtures...' &&
-        python manage.py loaddata locations_base user_test_data  calendar_test_data&&
-        echo 'Starting Daphne server for HTTP & WebSockets...' &&
-        daphne -b 0.0.0.0 -p 8000 app.asgi:application
-      "
-#      python manage.py compilemessages --ignore=cache --ignore=outdated/*/locale || true &&
+    entrypoint: ["/app/dev-entrypoint.sh"]
     networks:
       - swimpro_dev_network
     ports:
       - "8000:8000"
+      - "5678:5678"
     depends_on:
       db-dev:
         condition: service_healthy

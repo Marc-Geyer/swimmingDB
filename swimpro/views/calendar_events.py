@@ -110,23 +110,23 @@ def _create_event_dict(plan: TrainingPlan, start_dt: datetime, duration_minutes:
 
     # Map to FullCalendar fields
     event = {
-        "id": f"planned_{plan.id}_{start_dt.timestamp()}",  # Unique ID for generated events
+        "id": f"planned_{plan.id}_{int(start_dt.timestamp())}",
         "title": f"{plan.group.short_name} - {plan.group.name}",
         "start": start_dt.isoformat(),
         "end": end_dt.isoformat(),
         "extendedProps": {
-            "plan_id": plan.id,
-            "group_id": plan.group.id,
-            "coach": plan.coach.get_full_name() if plan.coach else "No Coach",
-            "location": plan.location.name if plan.location else "TBD",
+            "plan_id": int(plan.id),
+            "group_id": int(plan.group.id),
+            "coaches": ", ".join([str(coach) for coach in plan.coach.all()]) ,
+            "location": plan.location.name if plan.location else None,
             "is_generated": True,
-            "is_override": is_override,
-            "original_plan_time": str(plan.start_time)
+            "is_override": bool(is_override),
+            "original_plan_time": plan.start_time.isoformat() if plan.start_time else None
         }
     }
 
     if plan.location:
-        event["location"] = plan.location.address or plan.location.name
+        event["location"] = plan.location.address() or plan.location.name
 
     return event
 
@@ -172,20 +172,27 @@ def get_existing_sessions(
 
     events = []
     for session in qs:
-        events.append({
-            "id": f"session_{session.id}",
+        session_info = {
+            "id": f"session_{int(session.id)}",
             "title": session.name or f"{session.plan.group.short_name} Session",
             "start": session.start.isoformat(),
             "end": session.end.isoformat(),
             "extendedProps": {
-                "session_id": session.id,
-                "type": session.type,
-                "is_cancelled": session.is_cancelled,
-                "notes": session.notes,
+                "session_id": int(session.id),
+                "type": session.type or None,
+                "group_id": int(session.plan.group.id),
+                "coaches": ", ".join([str(coach) for coach in session.plan.coach.all()]),
+                "location": session.plan.location.name if session.plan.location else None,
+                "is_cancelled": bool(session.is_cancelled),
+                "notes": session.notes or None,
                 "is_generated": False
             },
-            "color": "#ff0000" if session.is_cancelled else "#007bff"  # Example coloring
-        })
+            "color": "#ff0000" if session.is_cancelled else "#007bff"
+        }
+
+        if session.plan.location:
+            session_info["location"] = session.plan.location.address() or session.plan.location.name
+        events.append(session_info)
 
     return events
 

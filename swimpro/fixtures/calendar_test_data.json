@@ -20,7 +20,7 @@
     "pk": 1,
     "fields": {
       "group": 1,
-      "coach": "usr_parent_mueller_01",
+      "coach": "per_thomas_mueller",
       "location": 1,
       "start_date": "2026-01-07",
       "end_date": "2026-7-30",

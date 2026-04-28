@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const props = info.event.extendedProps;
       let msg = `ID: ${info.event.id}\n`;
 
-      if (props.type === 'calculated') {
+      if (props.is_generated) {
         msg += `Type: Planned Event (Not yet created)\n`;
         msg += `Plan ID: ${props.plan_id}\n`;
         msg += `Action: Click to create session?`;
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // In a real app, replace alert with a modal
       if(confirm(msg)) {
-        if(props.type === 'calculated') {
+        if(props.is_generated) {
            // Trigger creation logic here
            console.log("Creating session for plan:", props.plan_id);
         }

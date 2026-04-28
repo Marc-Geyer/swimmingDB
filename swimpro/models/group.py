@@ -1,11 +1,12 @@
 from datetime import timedelta, date, datetime
 
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 
 from app.settings import AUTH_USER_MODEL
-from swimpro.models import Facility
+from swimpro.models import Facility, Person
 
 
 class TrainingGroup(models.Model):
@@ -28,7 +29,11 @@ class TrainingGroup(models.Model):
 class TrainingPlan(models.Model):
     """Defines the repeating rule (e.g., 'Every Monday 18:00')."""
     group = models.ForeignKey(TrainingGroup, on_delete=models.CASCADE, related_name="plans")
-    coach = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='plans')
+    coach = models.ManyToManyField(
+        Person,
+        limit_choices_to=~Q(role=Person.Role.SWIMMER),
+        null=True,
+        related_name='plans')
     location = models.ForeignKey(Facility, on_delete=models.SET_NULL, null=True, related_name='plans')
 
     # Recurrence settings

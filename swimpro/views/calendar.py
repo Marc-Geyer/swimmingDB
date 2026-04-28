@@ -1,5 +1,6 @@
 import logging
 import traceback
+from pprint import pprint
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -41,7 +42,6 @@ def calendar_data(request):
         end = datetime.fromisoformat(end_str) if end_str else timezone.now() + timedelta(days=60)
 
         events = merge_and_render_events(start_dt=start, end_dt=end)
-
         return JsonResponse(events, safe=False)
 
     except Exception as e:

@@ -29,7 +29,7 @@ class TrainingGroup(models.Model):
 class TrainingPlan(models.Model):
     """Defines the repeating rule (e.g., 'Every Monday 18:00')."""
     group = models.ForeignKey(TrainingGroup, on_delete=models.CASCADE, related_name="plans")
-    coach = models.ManyToManyField(
+    coaches = models.ManyToManyField(
         Person,
         limit_choices_to=~Q(role=Person.Role.SWIMMER),
         null=True,

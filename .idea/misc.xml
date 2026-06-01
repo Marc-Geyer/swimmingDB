@@ -17,5 +17,5 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.12 (swimmingDB)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (swimmingDB)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Remote 3.12 Docker Compose (swim-pro-dev)" project-jdk-type="Python SDK" />
 </project>

@@ -117,7 +117,7 @@ def _create_event_dict(plan: TrainingPlan, start_dt: datetime, duration_minutes:
         "extendedProps": {
             "plan_id": int(plan.id),
             "group_id": int(plan.group.id),
-            "coaches": ", ".join([str(coach) for coach in plan.coach.all()]) ,
+            "coaches": ", ".join([str(coach) for coach in plan.coaches.all()]) ,
             "location": plan.location.name if plan.location else None,
             "is_generated": True,
             "is_override": bool(is_override),
@@ -181,7 +181,7 @@ def get_existing_sessions(
                 "session_id": int(session.id),
                 "type": session.type or None,
                 "group_id": int(session.plan.group.id),
-                "coaches": ", ".join([str(coach) for coach in session.plan.coach.all()]),
+                "coaches": ", ".join([str(coach) for coach in session.plan.coaches.all()]),
                 "location": session.plan.location.name if session.plan.location else None,
                 "is_cancelled": bool(session.is_cancelled),
                 "notes": session.notes or None,
